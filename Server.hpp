@@ -10,6 +10,7 @@
 #include "errors.hpp"
 #include "Channel.hpp"
 #include "User.hpp"
+#include "Socket.hpp"
 
 class Server
 {

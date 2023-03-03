@@ -34,33 +34,10 @@ Server::Server(int argc, char **argv){
 
 Server::~Server(){}
 
-void createSocket()
-{
-
-}
-void bindSocket()
-{
-
-}
-void listenOnSocket()
-{
-
-}
-void setPoll()
-{
-
-}
-
-void setupSocket()
-{
-	createSocket();
-	bindSocket();
-	listenOnSocket();
-}
-
 void Server::run(void)
 {
-	setupSocket();
+	_listeningSocket = setupSocket(_port);
+	exit(1);
 	setPoll();
 	while (!_stop)
 	{
@@ -70,7 +47,7 @@ void Server::run(void)
 }
 void Server::loop(void)
 {
-	poll();
+	// poll();
 	for (int i = 0; i < _activeUsers; i++)
 	{
 		;
