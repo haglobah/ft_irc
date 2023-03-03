@@ -30,7 +30,6 @@ Server::Server(int argc, char **argv){
 	if (invalid(_password)) throw incorrectPassword();
 	//REMINDER: Do we need this?
 	_stop = false;
-
 }
 
 Server::~Server(){}
@@ -72,7 +71,7 @@ void Server::run(void)
 void Server::loop(void)
 {
 	poll();
-	for (int i = 0; i < _activeUsers)
+	for (int i = 0; i < _activeUsers; i++)
 	{
 		;
 	}
