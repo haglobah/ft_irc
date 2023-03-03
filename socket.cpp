@@ -16,90 +16,91 @@ typedef int SOCKET;
 
 SOCKET	createSocket()
 {
-	SOCKET	fd = socket(AF_INET, SOCK_STREAM, 0);
+	SOCKET	socketFD = socket(AF_INET, SOCK_STREAM, 0);
 	int		optVal = 1;
 	int		optValSize = sizeof(optVal);
 
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optValSize) == -1 || setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, (const char*)&optVal, optValSize) == -1)
+	if (setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optValSize) == -1 || setsockopt(socketFD, SOL_SOCKET, SO_NOSIGPIPE, (const char*)&optVal, optValSize) == -1)
 	{
 		handle_error("SET SOCKET OPT FAILURE");
 		return (-1);
 	}
-	fcntl(fd, F_SETFL, O_NONBLOCK);
-	if (fd == -1)
+	fcntl(socketFD, F_SETFL, O_NONBLOCK);
+	if (socketFD == -1)
 	{
 		handle_error("SOCKET FAILURE");
 		return (-1);
 	}
-	std::cout << "SOCKET LISTENS ON: " << fd << std::endl;
-	return (fd);
+	std::cout << "SOCKET CREATED ON FD: " << socketFD << std::endl;
+	return (socketFD);
 }
 
 int bindSocket(SOCKET socketFD, int port)
 {
-	int			bind_ret;
-	sockaddr_in my_addr;
+	int			bindRet;
+	sockaddr_in myAddr;
 
-	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(port);
-	inet_pton(AF_INET, "0.0.0.0", &my_addr.sin_addr);
+	myAddr.sin_family = AF_INET;
+	myAddr.sin_port = htons(port);
+	inet_pton(AF_INET, "0.0.0.0", &myAddr.sin_addr);
 
-	bind_ret = bind(socketFD, (sockaddr *)&my_addr, sizeof(my_addr));
-	if (bind_ret == -1)
+	bindRet = bind(socketFD, (sockaddr *)&myAddr, sizeof(myAddr));
+	if (bindRet == -1)
 	{
 		handle_error("BIND FAILURE");
 		return (-1);
 	}
 	std::cout << "BIND WAS SUCCESFULL" << std::endl;
-	return (bind_ret);
+	return (bindRet);
 }
 
-int	listenOnSocket(SOCKET socket_fd)
+int	listenOnSocket(SOCKET socketFD)
 {
-	int	listen_ret;
+	int	listenRet;
 
-	listen_ret = listen(socket_fd, 128);
-	if (listen_ret == -1)
+	listenRet = listen(socketFD, 128);
+	if (listenRet == -1)
 	{
 		handle_error("LISTEN FAILURE");
 		return (-1);
 	}
 	std::cout << "LISTEN WAS SUCCESFULL" << std::endl;
-	return (listen_ret);
+	return (listenRet);
 }
 
-SOCKET acceptSocket(SOCKET socket_fd)
+SOCKET acceptSocket(SOCKET socketFD)
 {
 	SOCKET		clientSocket;
 	sockaddr_in	client;
 	socklen_t	clientSize = sizeof(client);
 
-	clientSocket = accept(socket_fd, (sockaddr *)&client, &clientSize);
+	clientSocket = accept(socketFD, (sockaddr *)&client, &clientSize);
 	std::cout << "ACCEPT WAS SUCCESFULL" << std::endl;
 	char	host[INET_ADDRSTRLEN];
 	
 	inet_ntop(AF_INET, &client.sin_addr, host, INET_ADDRSTRLEN);
 	std::string	hostmask(host);
-    std::cout << "Client hostmask: " << hostmask << std::endl;
-	std::cout << "User connected on fd: " << clientSocket << std::endl;
+    std::cout << "CLIENT HOSTMASK: " << hostmask << std::endl;
+	std::cout << "USER LISTENING ON FD: " << clientSocket << std::endl;
 	if (clientSocket == -1)
 	{
 		handle_error("ACCEPT FAILURE");
 		return (-1);
 	}
-	std::cout << "Client connected" << std::endl;
-	// addToPoll(clientSocket);
+	std::cout << "CLIENT LISTENING" << std::endl;
 	return(clientSocket);
 }
 
-int	connectSocket(int socket_fd, int listen_fd)
+
+
+int	connectSocket(int socketFD)
 {
 	struct pollfd fds[200];
-	SOCKET clientSocket;
+	SOCKET clientSocketFD;
 	int pollReturn;
 
 	memset(fds, 0, sizeof(fds));
-	fds[0].fd = listen_fd;
+	fds[0].fd = socketFD;
 	fds[0].events = POLLIN;
 	pollReturn = poll(fds, 1, 50000);
 	if (pollReturn == -1)
@@ -107,21 +108,20 @@ int	connectSocket(int socket_fd, int listen_fd)
 		handle_error("POLL FAILURE");
 		return (-1);	
 	}
-	clientSocket = acceptSocket(socket_fd);
-	std::cout << "SOCKET FD IS: " << socket_fd << " ACCEPT FD IS:" << clientSocket << std::endl;
-	return(clientSocket);
+	clientSocketFD = acceptSocket(socketFD);
+	std::cout << "SOCKET FD IS: " << socketFD << " ACCEPT FD IS:" << clientSocketFD << std::endl;
+	return(clientSocketFD);
 }
 
 int setupSocket(int port)
 {
-	SOCKET socket_fd;
-	int bind_fd;
-	int listen_fd;
+	SOCKET socketFd;
+	int listenFD;
 
-	socket_fd = createSocket();
-	bind_fd = bindSocket(socket_fd, port);
-	listen_fd = listenOnSocket(socket_fd);
+	socketFd = createSocket();
+	bindSocket(socketFd, port);
+	listenOnSocket(socketFd);
 
-	int userFD = connectSocket(socket_fd, listen_fd);
+	int userFD = connectSocket(socketFd);
 	return userFD;
 }

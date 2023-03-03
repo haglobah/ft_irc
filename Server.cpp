@@ -38,18 +38,24 @@ void Server::run(void)
 {
 	_listeningSocket = setupSocket(_port);
 	exit(1);
-	setPoll();
+	// setPoll(_listeningSocket);
 	while (!_stop)
 	{
-		loop();
+		loop(_listeningSocket);
 	}
 	close(_listeningSocket);
 }
-void Server::loop(void)
+
+void	executeCommand(){}
+
+void	acceptUser(){}
+
+void Server::loop(int fd)
 {
 	// poll();
-	for (int i = 0; i < _activeUsers; i++)
-	{
-		;
-	}
+	std::map<int, User>::iterator it = _users.find(_listeningSocket);
+	if (it != _users.end())
+		executeCommand();
+	else
+		acceptUser();
 }

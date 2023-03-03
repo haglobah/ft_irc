@@ -30,5 +30,5 @@ class Server
 		std::map<int, User>		_users;
 		std::map<std::string, Channel>	_channels;
 
-		void loop(void);
+		void loop(int fd);
 };
