@@ -18,13 +18,18 @@ class Server
 		Server(int argc, char **argv);
 		~Server();
 
-		void run(void);
+		void	run(void);
+		int		setPoll(int);
+		int		acceptUser();
+		int		addToPoll(int);
+		int		removeFromPoll(int);
 
 	private:
 		int 					_port;
 		std::string				_password;
 		pollfd					_userPoll[SOMAXCONN];
 		nfds_t 					_activeUsers;
+		unsigned int			_activePoll;
 		bool					_stop;
 		int 					_listeningSocket;
 		std::map<int, User>		_users;

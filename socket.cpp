@@ -20,7 +20,8 @@ SOCKET	createSocket()
 	int		optVal = 1;
 	int		optValSize = sizeof(optVal);
 
-	if (setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optValSize) == -1 || setsockopt(socketFD, SOL_SOCKET, SO_NOSIGPIPE, (const char*)&optVal, optValSize) == -1)
+	if (setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optValSize) == -1 
+	||	setsockopt(socketFD, SOL_SOCKET, SO_NOSIGPIPE, (const char*)&optVal, optValSize) == -1)
 	{
 		handle_error("SET SOCKET OPT FAILURE");
 		return (-1);
@@ -68,60 +69,53 @@ int	listenOnSocket(SOCKET socketFD)
 	return (listenRet);
 }
 
-SOCKET acceptSocket(SOCKET socketFD)
-{
-	SOCKET		clientSocket;
-	sockaddr_in	client;
-	socklen_t	clientSize = sizeof(client);
+// SOCKET acceptSocket(SOCKET socketFD)
+// {
+// 	SOCKET		clientSocket;
+// 	sockaddr_in	client;
+// 	socklen_t	clientSize = sizeof(client);
 
-	clientSocket = accept(socketFD, (sockaddr *)&client, &clientSize);
-	std::cout << "ACCEPT WAS SUCCESFULL" << std::endl;
-	char	host[INET_ADDRSTRLEN];
+// 	clientSocket = accept(socketFD, (sockaddr *)&client, &clientSize);
+// 	std::cout << "ACCEPT WAS SUCCESFULL" << std::endl;
+// 	char	host[INET_ADDRSTRLEN];
 	
-	inet_ntop(AF_INET, &client.sin_addr, host, INET_ADDRSTRLEN);
-	std::string	hostmask(host);
-    std::cout << "CLIENT HOSTMASK: " << hostmask << std::endl;
-	std::cout << "USER LISTENING ON FD: " << clientSocket << std::endl;
-	if (clientSocket == -1)
-	{
-		handle_error("ACCEPT FAILURE");
-		return (-1);
-	}
-	std::cout << "CLIENT LISTENING" << std::endl;
-	return(clientSocket);
-}
+// 	inet_ntop(AF_INET, &client.sin_addr, host, INET_ADDRSTRLEN);
+// 	std::string	hostmask(host);
+//     std::cout << "CLIENT HOSTMASK: " << hostmask << std::endl;
+// 	std::cout << "USER LISTENING ON FD: " << clientSocket << std::endl;
+// 	if (clientSocket == -1)
+// 	{
+// 		handle_error("ACCEPT FAILURE");
+// 		return (-1);
+// 	}
+// 	std::cout << "CLIENT LISTENING" << std::endl;
+// 	return(clientSocket);
+// }
 
 
 
-int	connectSocket(int socketFD)
-{
-	struct pollfd fds[200];
-	SOCKET clientSocketFD;
-	int pollReturn;
+// int	connectSocket(int socketFD)
+// {
+// 	struct pollfd fds[200];
+// 	SOCKET clientSocketFD;
+// 	int pollReturn;
 
-	memset(fds, 0, sizeof(fds));
-	fds[0].fd = socketFD;
-	fds[0].events = POLLIN;
-	pollReturn = poll(fds, 1, 50000);
-	if (pollReturn == -1)
-	{
-		handle_error("POLL FAILURE");
-		return (-1);	
-	}
-	clientSocketFD = acceptSocket(socketFD);
-	std::cout << "SOCKET FD IS: " << socketFD << " ACCEPT FD IS:" << clientSocketFD << std::endl;
-	return(clientSocketFD);
-}
+// 	memset(fds, 0, sizeof(fds));
+// 	fds[0].fd = socketFD;
+// 	fds[0].events = POLLIN;
+// 	clientSocketFD = acceptSocket(socketFD);
+// 	std::cout << "SOCKET FD IS: " << socketFD << " ACCEPT FD IS:" << clientSocketFD << std::endl;
+// 	return(clientSocketFD);
+// }
 
 int setupSocket(int port)
 {
-	SOCKET socketFd;
-	int listenFD;
+	SOCKET socketFD;
 
-	socketFd = createSocket();
-	bindSocket(socketFd, port);
-	listenOnSocket(socketFd);
-
-	int userFD = connectSocket(socketFd);
-	return userFD;
+	socketFD = createSocket();
+	bindSocket(socketFD, port);
+	listenOnSocket(socketFD);
+	return (socketFD);
+	// int userFD = connectSocket(socketFd);
+	// return userFD;
 }

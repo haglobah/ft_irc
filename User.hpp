@@ -16,5 +16,5 @@ class User
 		bool			_disconnect;
 
 	public:
-		
+		User(int fd, std::string hostmask);		
 };
