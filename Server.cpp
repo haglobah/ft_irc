@@ -45,7 +45,22 @@ void Server::run(void)
 	close(_listeningSocket);
 }
 
-void	executeCommand(){}
+void	executeCommand(int fd)
+{
+	char	buf[4096];
+	int		recvBytes;
+
+	memset(buf, 0, 4096);
+	recvBytes = recv(fd, buf, 4096, 0);
+	if (recvBytes == -1)
+		handle_error("ERROR READING BYTES");
+	else if (recvBytes == 0)
+		removeUser();
+	else
+	{
+		
+	}
+}
 
 int	Server::addToPoll(int clientSocket)
 {
@@ -122,7 +137,7 @@ void Server::loop(int fd)
 	setPoll(_listeningSocket);
 	std::map<int, User>::iterator it = _users.find(_listeningSocket);
 	if (it != _users.end())
-		executeCommand();
+		executeCommand(it->second.getUserFD());
 	else
 		acceptUser();
 }

@@ -17,4 +17,6 @@ class User
 
 	public:
 		User(int fd, std::string hostmask);		
+
+		int	getUserFD() const;
 };
