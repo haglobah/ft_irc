@@ -24,6 +24,10 @@ class listenOnSocketFailed : public std::exception {char const *what() const thr
 			return "Failed to listen on the socket";
 		}};
 
+class acceptOnSocketFailed : public std::exception {char const *what() const throw() {
+			return "Failed to accept on the socket";
+		}};
+
 class activePollFull : public std::exception {char const *what() const throw() {
 			return "Number of connection is full, can't accept more connections";
 		}};

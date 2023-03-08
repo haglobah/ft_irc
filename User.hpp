@@ -19,4 +19,6 @@ class User
 		User(int fd, std::string hostmask);		
 
 		int	getUserFD() const;
+		std::string	getBuffer() const;
+		void	setBuffer(char *str);
 };

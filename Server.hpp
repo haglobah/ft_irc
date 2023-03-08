@@ -19,9 +19,11 @@ class Server
 		~Server();
 
 		void	run(void);
-		int		setPoll(int);
-		int		acceptUser();
+		void	acceptUser();
 		int		addToPoll(int);
+		int		executeCommand(int);
+		void	getMessage(char *, int);
+		void	setupPoll(int);
 		int		removeFromPoll(int);
 
 	private:
