@@ -30,7 +30,7 @@ int bindSocket(SOCKET socketFD, int port)
 	bindRet = bind(socketFD, (sockaddr *)&myAddr, sizeof(myAddr));
 	if (bindRet == -1)
 		throw bindingSocketFailed();
-	cout << "Bind was succesfull" << endl;
+	cout << "Bind was succesfull!" << endl;
 	return (bindRet);
 }
 
@@ -41,7 +41,7 @@ int	listenOnSocket(SOCKET socketFD)
 	listenRet = listen(socketFD, 128);
 	if (listenRet == -1)
 		throw listenOnSocketFailed();
-	cout << "Listen was succesfull" << endl;
+	cout << "Listen was succesfull!" << endl;
 	return (listenRet);
 }
 

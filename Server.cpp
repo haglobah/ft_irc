@@ -47,32 +47,41 @@ void Server::run(void)
 	close(_listeningSocket);
 }
 
-void	Server::getMessage(char *buf, int fd)
+void	Server::executeCommand(string cmd)
 {
-	User	*user = &_users.find(fd)->second;
-
-	user->setBuffer(buf);
-	// user->setCommand;
-	cout << "[" << user->getBuffer() << "]" << endl;
+	cout << "Command is: " << cmd << endl;
 }
 
-int	Server::executeCommand(int fd)
+void	Server::processCommand(char *buf, int fd)
 {
-	char	buf[4096];
-	string	test;
+	User	*user = &_users.find(fd)->second;
+	string	cmd;
+
+	user->setBuffer(buf);
+	while(1)
+	{
+		cmd = user->parseCommand();
+		if (cmd.empty())
+			break;
+		executeCommand(cmd);
+	}
+}
+
+void	Server::processInput(int fd)
+{
+	char	buf[8192];
 	int		recvBytes;
 
-	memset(buf, 0, 4096);
-	recvBytes = recv(fd, buf, 4096, 0);
-	if (recvBytes == -1)
-		handle_error("ERROR READING BYTES");
-	else if (recvBytes == 0)
-		removeFromPoll(fd);
-	else
+	memset(buf, 0, 8192);
+	recvBytes = recv(fd, buf, 8192, 0);
+	if (recvBytes == -1 || recvBytes == 0)
 	{
-		getMessage(buf, fd);
+		if (recvBytes == 0)
+			removeFromPoll(fd);
+		throw readingMsgFailed();
 	}
-	return(0);
+	else
+		processCommand(buf, fd);
 }
 
 void	Server::acceptUser()
@@ -80,18 +89,16 @@ void	Server::acceptUser()
 	SOCKET		clientSocket;
 	sockaddr_in	client;
 	socklen_t	clientSize = sizeof(client);
-	char	host[INET_ADDRSTRLEN];
+	char		host[INET_ADDRSTRLEN];
 
 	clientSocket = accept(_listeningSocket, (sockaddr *)&client, &clientSize);
 	inet_ntop(AF_INET, &client.sin_addr, host, INET_ADDRSTRLEN);
-    cout << "Hostmask: " << host << endl;
-	cout << "Client Socket: " << clientSocket << endl;
 	if (clientSocket == -1)
 		throw acceptOnSocketFailed();
-	cout << "Accept was succesfull" << endl;
 	addToPoll(clientSocket);
 	_users.insert(pair<int, User>(clientSocket, User(clientSocket, host)));
-	cout << "Client added" << endl;
+	cout << "Accept was succesfull!" << endl;
+    cout << "Hostmask: " << host << " Client Socket: " << clientSocket << " Client added!" << endl;
 }
 
 void Server::loop(int fd)
@@ -107,7 +114,7 @@ void Server::loop(int fd)
 			if (_userPoll[i].fd == _listeningSocket)
 				acceptUser();
 			else
-				executeCommand(_userPoll[i].fd);
+				processInput(_userPoll[i].fd);
 		}
 	}
 	return ; 

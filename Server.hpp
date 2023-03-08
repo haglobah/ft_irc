@@ -18,13 +18,15 @@ class Server
 		Server(int argc, char **argv);
 		~Server();
 
-		void	run(void);
-		void	acceptUser();
-		int		addToPoll(int);
-		int		executeCommand(int);
-		void	getMessage(char *, int);
 		void	setupPoll(int);
+		int		addToPoll(int);
 		int		removeFromPoll(int);
+		void	executeCommand(std::string);
+		void	processCommand(char *, int);
+		void	processInput(int);
+		void	acceptUser();
+
+		void	run(void);
 
 	private:
 		int 					_port;

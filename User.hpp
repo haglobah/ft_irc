@@ -18,7 +18,9 @@ class User
 	public:
 		User(int fd, std::string hostmask);		
 
-		int	getUserFD() const;
+		void		setBuffer(char *str);
+
+		int			getUserFD() const;
 		std::string	getBuffer() const;
-		void	setBuffer(char *str);
+		std::string	parseCommand();
 };
