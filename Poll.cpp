@@ -9,7 +9,7 @@ void	Server::setupPoll(int fd)
 }
 
 
-int	Server::addToPoll(int clientSocket)
+int		Server::addToPoll(int clientSocket)
 {
 	if (_activePoll >= SOMAXCONN)
 		handle_error("ADD TO POLL FAILURE");
@@ -19,7 +19,7 @@ int	Server::addToPoll(int clientSocket)
 	return (0);
 }
 
-int	Server::removeFromPoll(int clientFD)
+int		Server::removeFromPoll(int clientFD)
 {
 	int	i = -1;
 

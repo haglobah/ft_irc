@@ -57,7 +57,7 @@ void	Server::processCommand(char *buf, int fd)
 	User	*user = &_users.find(fd)->second;
 	string	cmd;
 
-	user->setBuffer(buf);
+	user->writeToBuffer(buf);
 	while(1)
 	{
 		cmd = user->parseCommand();

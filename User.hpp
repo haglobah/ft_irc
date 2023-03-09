@@ -18,7 +18,7 @@ class User
 	public:
 		User(int fd, std::string hostmask);		
 
-		void		setBuffer(char *str);
+		void		writeToBuffer(char *str);
 
 		int			getUserFD() const;
 		std::string	getBuffer() const;

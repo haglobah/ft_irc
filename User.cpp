@@ -15,13 +15,14 @@ string	User::parseCommand()
 	
 	while (_buf.find("\r\n") != std::string::npos)
 		_buf.replace(_buf.find("\r\n"), 2, "\n");
+	// might be a bug
 	newLine = _buf.find('\n');
 	cmd = _buf.substr(0, newLine);
 	_buf.erase(0, newLine + 1);
 	return (cmd);
 }
 
-void	User::setBuffer(char *str)
+void	User::writeToBuffer(char *str)
 {
 	if (_buf.empty())
 		_buf = str;
