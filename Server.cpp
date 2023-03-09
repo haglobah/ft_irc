@@ -1,6 +1,10 @@
 #include "Server.hpp"
 
-using namespace std;
+using std::string;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::pair;
 
 static bool containsChars(string &haystack, string const &needles)
 {
@@ -47,12 +51,8 @@ void Server::run(void)
 	close(_listeningSocket);
 }
 
-void	Server::executeCommand(string cmd)
-{
-	cout << "Command is: " << cmd << endl;
-}
 
-string	parseCommand(string buf)
+string	getCommand(string buf)
 {
 	string cmd;
 	size_t newLine;
@@ -66,36 +66,43 @@ string	parseCommand(string buf)
 	return (cmd);
 }
 
-void	Server::processCommand(char *buf, int fd)
+
+void	Server::executeCommand(User *user, Command c)
+{
+	cout << "Command is: " << c._name << endl;
+}
+
+void	Server::processCommands(char *buf, int fd)
 {
 	User	*user = &_users.find(fd)->second;
 	string	cmd;
 
-	user->writeToBuffer(buf);
 	while(1)
 	{
-		cmd = parseCommand(buf);
+		cmd = getCommand(buf);
 		if (cmd.empty())
 			break;
-		executeCommand(cmd);
+		//user->setBuffer(cmd);
+		Command c(cmd);
+		executeCommand(user, c);
 	}
 }
 
-void	Server::processInput(int fd)
+void	Server::receiveInput(int fd)
 {
 	char	buf[8192];
-	int		recvBytes;
+	int		received;
 
 	memset(buf, 0, 8192);
-	recvBytes = recv(fd, buf, 8192, 0);
-	if (recvBytes == -1 || recvBytes == 0)
+	received = recv(fd, buf, 8192, 0);
+	if (received == -1 || received == 0)
 	{
-		if (recvBytes == 0)
-			removeFromPoll(fd);
+		if (received == 0)
+			removeUser(fd);
 		throw readingMsgFailed();
 	}
 	else
-		processCommand(buf, fd);
+		processCommands(buf, fd);
 }
 
 void	Server::acceptUser()
@@ -128,7 +135,7 @@ void Server::loop(int fd)
 			if (_userPoll[i].fd == _listeningSocket)
 				acceptUser();
 			else
-				processInput(_userPoll[i].fd);
+				receiveInput(_userPoll[i].fd);
 		}
 	}
 	return ; 

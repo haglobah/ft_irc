@@ -5,12 +5,14 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <map>
+#include <vector>
 #include <string>
-
+#include <sstream>
 #include "errors.hpp"
 #include "Channel.hpp"
+#include "Command.hpp"
 #include "User.hpp"
-#include "Socket.hpp"
+#include "socket.hpp"
 
 class Server
 {
@@ -20,10 +22,10 @@ class Server
 
 		void	setupPoll(int);
 		int		addToPoll(int);
-		int		removeFromPoll(int);
-		void	executeCommand(std::string);
-		void	processCommand(char *, int);
-		void	processInput(int);
+		int		removeUser(int);
+		void	executeCommand(User *, Command);
+		void	processCommands(char *, int);
+		void	receiveInput(int);
 		void	acceptUser();
 
 		void	run(void);

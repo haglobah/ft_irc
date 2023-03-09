@@ -19,7 +19,7 @@ int		Server::addToPoll(int clientSocket)
 	return (0);
 }
 
-int		Server::removeFromPoll(int clientFD)
+int		Server::removeUser(int clientFD)
 {
 	int	i = -1;
 
