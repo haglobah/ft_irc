@@ -12,14 +12,27 @@ class User
 		std::string		_hostmask;
 		int 			_userFd;
 		bool 			_isRegistered;
-		bool 			_allowConnection;
-		bool			_disconnect;
+		bool 			_allowConnection; // REMINDER: check if used
+		bool			_isDisconnected;
 
 	public:
 		User(int fd, std::string hostmask);		
 
 		void		setBuffer(std::string);
 
-		int			getUserFD() const;
+		int			getFD() const;
+		std::string	getName() const;
+		void		setName(std::string);
+
+		std::string	getFull() const;
+		void		setFull(std::string);
+
+		std::string	getNick() const;
+		void		setNick(std::string);
 		std::string	getBuffer() const;
+
+		bool		isDisconnected();
+
+		bool		isRegistered();
+		void		registrate();
 };

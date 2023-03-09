@@ -23,12 +23,32 @@ class Server
 		void	setupPoll(int);
 		int		addToPoll(int);
 		int		removeUser(int);
-		void	executeCommand(User *, Command);
-		void	processCommands(char *, int);
+		void	executeCommand(User &, Command);
+		void	processCommands(std::string, int);
 		void	receiveInput(int);
 		void	acceptUser();
 
 		void	run(void);
+
+		void	sendResponse(std::string, std::string, User &);
+
+		void	pass(User &user, Command c);
+		void	nick(User &user, Command c);
+		void	user(User &user, Command c);
+		void	ping(User &user, Command c);
+		void	cap(User &user, Command c);
+		void	join(User &user, Command c);
+		void	privmsg(User &user, Command c);
+		void	topic(User &user, Command c);
+		void	who(User &user, Command c);
+		void	part(User &user, Command c);
+		void	mode(User &user, Command c);
+		void	quit(User &user, Command c);
+		void	list(User &user, Command c);
+		void	invite(User &user, Command c);
+		void	kick(User &user, Command c);
+
+		bool	alreadyInUse(std::string mode, std::string name, User user);
 
 	private:
 		int 					_port;

@@ -5,31 +5,45 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+Command::~Command(){}
+
+static void to_upper(std::string& str)
+{
+	for (std::string::iterator p = str.begin(); str.end() != p; ++p)
+       *p = toupper(*p);
+}
+
 Command::Command(string cmd)
 {
     string		s;    
 
 	_name = cmd.substr(0, cmd.find(' '));
+	// to_upper(_name);
 	cmd.erase(0, cmd.find(' ') + 1);
-	
+
 	std::istringstream cmd_istr(cmd);
+	cout << "CMD ISTR: " << cmd << endl;
     while (getline(cmd_istr, s, ' '))
 	{
+		cout << "STRING FOR VECTOR: " << s << endl;
         _args.push_back(s);
 		if (cmd_istr.peek() == ':')
 		{
+			cmd_istr.get();
 			std::istreambuf_iterator<char> eos;
 			std::string s(std::istreambuf_iterator<char>(cmd_istr), eos);
 			_args.push_back(s);
 			break;
 		}
 	}
-	cout << "Name: " << _name << endl;
-	cout << "Vector: " << endl;
-	for (int i = 0; i < _args.size(); i++)
-	{
-		cout << _args[i] << endl;
-	}
 }
 
-Command::~Command(){}
+std::string Command::getName() const
+{
+	return (_name);
+}
+
+std::vector<std::string> Command::getArgs() const
+{
+	return (_args);
+}

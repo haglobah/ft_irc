@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+#include "commands/commands.hpp"
+
 using std::string;
 using std::cout;
 using std::cerr;
@@ -52,7 +54,7 @@ void Server::run(void)
 }
 
 
-string	getCommand(string buf)
+string	getCommand(string& buf)
 {
 	string cmd;
 	size_t newLine;
@@ -67,14 +69,32 @@ string	getCommand(string buf)
 }
 
 
-void	Server::executeCommand(User *user, Command c)
+void	Server::executeCommand(User &u, Command c)
 {
-	cout << "Command is: " << c._name << endl;
+	std::string cmd = c.getName();
+	cout << "Command is: " << cmd << endl;
+
+	if 		(cmd == "PASS") { pass(u, c); }
+	else if (cmd == "NICK") { nick(u, c); }
+	else if (cmd == "USER") { user(u, c); }
+	else if (cmd == "PING") { ping(u, c); }
+	else if (cmd == "CAP") { cap(u, c); }
+	// else if (cmd == "JOIN") { join(u, c); }
+	// else if (cmd == "PRIVMSG") { privmsg(u, c); }
+	// else if (cmd == "TOPIC") { topic(u, c); }
+	// else if (cmd == "WHO") { who(u, c); }
+	// else if (cmd == "PART") { part(u, c); }
+	// else if (cmd == "MODE") { mode(u, c); }
+	// else if (cmd == "QUIT") { quit(u, c); }
+	// else if (cmd == "LIST") { list(u, c); }
+	// else if (cmd == "INVITE") { invite(u, c); }
+	// else if (cmd == "KICK") { kick(u, c); }
+	else	{}		
 }
 
-void	Server::processCommands(char *buf, int fd)
+void	Server::processCommands(string buf, int fd)
 {
-	User	*user = &_users.find(fd)->second;
+	User	&user = _users.find(fd)->second;
 	string	cmd;
 
 	while(1)
@@ -82,7 +102,6 @@ void	Server::processCommands(char *buf, int fd)
 		cmd = getCommand(buf);
 		if (cmd.empty())
 			break;
-		//user->setBuffer(cmd);
 		Command c(cmd);
 		executeCommand(user, c);
 	}
