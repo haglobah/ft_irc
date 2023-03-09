@@ -52,6 +52,20 @@ void	Server::executeCommand(string cmd)
 	cout << "Command is: " << cmd << endl;
 }
 
+string	parseCommand(string buf)
+{
+	string cmd;
+	size_t newLine;
+	
+	while (buf.find("\r\n") != std::string::npos)
+		buf.replace(buf.find("\r\n"), 2, "\n");
+	// REMINDER: might be a bug
+	newLine = buf.find('\n');
+	cmd = buf.substr(0, newLine);
+	buf.erase(0, newLine + 1);
+	return (cmd);
+}
+
 void	Server::processCommand(char *buf, int fd)
 {
 	User	*user = &_users.find(fd)->second;
@@ -60,7 +74,7 @@ void	Server::processCommand(char *buf, int fd)
 	user->writeToBuffer(buf);
 	while(1)
 	{
-		cmd = user->parseCommand();
+		cmd = parseCommand(buf);
 		if (cmd.empty())
 			break;
 		executeCommand(cmd);
