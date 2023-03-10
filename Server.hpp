@@ -33,7 +33,10 @@ class Server
 		void	run(void);
 
 		void	sendResponse(std::string, std::string, User &);
+		void 	sendResponse(std::string message, User& user);
+		void	sendToChannel(std::string message, Channel c);
 
+		// COMMANDS
 		void	pass(User &user, Command c);
 		void	nick(User &user, Command c);
 		void	user(User &user, Command c);
@@ -55,10 +58,17 @@ class Server
 		void	who(User &user, Command c);
 
 		bool	alreadyInUse(std::string mode, std::string name, User user);
-		std::map<std::string, std::string>	parseChannels(User &u, string channelStr);
-		std::map<std::string, std::string>	parseChannels(User &u, string channelStr, string keyStr);
-		bool	notInChannelNames(string channel);
+		std::map<std::string, std::string>	parseChannels(User &u, std::string channelStr);
+		std::map<std::string, std::string>	parseChannels(User &u, std::string channelStr, std::string keyStr);
 
+		void	addUser(std::vector<Channel>::iterator it, User &user);
+		void	joinChannel(std::map<std::string, std::string>::iterator chan_keys, User &user);
+		bool	notInChannelNames(std::string channel);
+
+		Channel&	getChannel(std::string name);
+		bool	isUserIn(User &u, std::string name);
+
+		
 	private:
 		int 					_port;
 		std::string				_password;
@@ -68,7 +78,9 @@ class Server
 		bool					_stop;
 		int 					_listeningSocket;
 		std::map<int, User>		_users;
-		std::map<std::string, Channel>	_channels;
+		std::vector<Channel>	_channels;
 
 		void loop(int fd);
 };
+
+bool contains(std::string s, std::string chars);

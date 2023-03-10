@@ -8,7 +8,7 @@ std::string	User::getFull() const {return (this->_fullName);}
 void User::setFull(std::string fullName) {_fullName = fullName;}
 
 std::string	User::getName() const {return (this->_name);}
-void User::setName(std::string name) {_name = name; std::cout << "Name in setter [" << _name << "]" << std::endl;}
+void User::setName(std::string name) {_name = name;}
 
 std::string	User::getNick() const {return (this->_nick);}
 void User::setNick(std::string nick) {_nick = nick;}
