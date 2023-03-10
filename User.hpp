@@ -31,7 +31,8 @@ class User
 		void		setNick(std::string);
 		std::string	getBuffer() const;
 
-		bool		isDisconnected();
+		bool		isDisconnected() const;
+		void		setDisconnected();
 
 		bool		isRegistered();
 		void		registrate();

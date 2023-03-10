@@ -74,22 +74,33 @@ void	Server::executeCommand(User &u, Command c)
 	std::string cmd = c.getName();
 	cout << "Command is: " << cmd << endl;
 
+	// CONNECTION
 	if 		(cmd == "PASS") { pass(u, c); }
+	else if (!u.isRegistered())	{ sendResponse("", "You need to register first!", u); }
 	else if (cmd == "NICK") { nick(u, c); }
 	else if (cmd == "USER") { user(u, c); }
 	else if (cmd == "PING") { ping(u, c); }
 	else if (cmd == "CAP") { cap(u, c); }
-	// else if (cmd == "JOIN") { join(u, c); }
-	// else if (cmd == "PRIVMSG") { privmsg(u, c); }
-	// else if (cmd == "TOPIC") { topic(u, c); }
-	// else if (cmd == "WHO") { who(u, c); }
+	// else if (cmd == "OPER") { oper(u, c); }
+	else if (cmd == "QUIT") { quit(u, c); }
+
+	// CHANNEL
+	else if (cmd == "JOIN") { join(u, c); }
 	// else if (cmd == "PART") { part(u, c); }
-	// else if (cmd == "MODE") { mode(u, c); }
-	// else if (cmd == "QUIT") { quit(u, c); }
+	// else if (cmd == "TOPIC") { topic(u, c); }
+	// else if (cmd == "NAMES") { names(u, c); }
 	// else if (cmd == "LIST") { list(u, c); }
 	// else if (cmd == "INVITE") { invite(u, c); }
 	// else if (cmd == "KICK") { kick(u, c); }
-	else	{}		
+
+	// SERVER
+	// else if (cmd == "MODE") { mode(u, c); }
+
+	// USER
+	// else if (cmd == "PRIVMSG") { privmsg(u, c); }
+	// else if (cmd == "NOTICE") { notice(u, c); }
+	// else if (cmd == "WHO") { who(u, c); }
+	else {}
 }
 
 void	Server::processCommands(string buf, int fd)
@@ -117,11 +128,18 @@ void	Server::receiveInput(int fd)
 	if (received == -1 || received == 0)
 	{
 		if (received == 0)
-			removeUser(fd);
+			removeConnection(fd);
 		throw readingMsgFailed();
 	}
 	else
 		processCommands(buf, fd);
+}
+
+void	Server::removeUser(User &u)
+{
+	u.setDisconnected();
+	removeConnection(u.getFD());
+	_users.erase(u.getFD());
 }
 
 void	Server::acceptUser()
@@ -135,7 +153,7 @@ void	Server::acceptUser()
 	inet_ntop(AF_INET, &client.sin_addr, host, INET_ADDRSTRLEN);
 	if (clientSocket == -1)
 		throw acceptOnSocketFailed();
-	addToPoll(clientSocket);
+	addConnection(clientSocket);
 	_users.insert(pair<int, User>(clientSocket, User(clientSocket, host)));
 	cout << "Accept was succesfull!" << endl;
     cout << "Hostmask: " << host << " Client Socket: " << clientSocket << " Client added!" << endl;

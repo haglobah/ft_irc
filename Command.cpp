@@ -18,14 +18,12 @@ Command::Command(string cmd)
     string		s;    
 
 	_name = cmd.substr(0, cmd.find(' '));
-	// to_upper(_name);
+	to_upper(_name);
 	cmd.erase(0, cmd.find(' ') + 1);
 
 	std::istringstream cmd_istr(cmd);
-	cout << "CMD ISTR: " << cmd << endl;
     while (getline(cmd_istr, s, ' '))
 	{
-		cout << "STRING FOR VECTOR: " << s << endl;
         _args.push_back(s);
 		if (cmd_istr.peek() == ':')
 		{
