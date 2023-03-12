@@ -196,20 +196,19 @@ Channel& Server::getChannel(string name)
 		if (it->_name == name)
 			return (*it);
 	}
-	return (*_channels.end());
+	Channel emptyChannel;
+	return (emptyChannel);
 }
 
 void	Server::topic(User &user, Command c)
 {
 	if (c.getArgs().size() > 2 || c.getArgs().size() < 1)
 		sendResponse("461", "TOPIC :Not enough parameters", user);
-	
-	Channel& chan = getChannel(c.getArgs()[0]);
-	std::cout << chan._name << std::endl;
-	if (!isUserIn(user, c.getArgs()[0]))
+	else if (!isUserIn(user, c.getArgs()[0]))
 		sendResponse("442", c.getArgs()[0] + " :You're not on that channel", user);
-	else if (c.getArgs().size() == 1)
+	if (c.getArgs().size() == 1)
 	{
+		Channel& chan = getChannel(c.getArgs()[0]);
 		if (chan._topic.empty())
 			sendResponse("331", c.getArgs()[0] + " :No topic is set", user);
 		else
@@ -221,6 +220,7 @@ void	Server::topic(User &user, Command c)
 	}
 	else if (c.getArgs().size() == 2)
 	{
+		Channel& chan = getChannel(c.getArgs()[0]);
 		std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
 		if (chan._modes == TOPIC_RESTRICTED && it->second != OPERATOR)
 		{
@@ -426,7 +426,7 @@ void	Server::mode(User &user, Command c)
 			sendResponse("502", " :Cant change mode for other users", user);
 		else
 		{
-			
+
 		}
 	}
 }

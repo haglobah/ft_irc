@@ -34,6 +34,7 @@ class Channel
 		Modes								_modes;
 		int									_userCount;
 
+		Channel();
 		Channel(std::string name);
 		~Channel();
 
