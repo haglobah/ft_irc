@@ -12,8 +12,9 @@ namespace {
 void	Server::sendResponse(string numeric_reply, string message, User& user)
 {
 	string response;
+	string clientMessage = user.getNick() + "@" + client;
 
-	response = client + " " + numeric_reply + " " + message + "\r\n";
+	response = clientMessage + " " + numeric_reply + " " + message + "\r\n";
 	std::cout << "Response to send is: " << response << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
@@ -24,8 +25,9 @@ void	Server::sendResponse(string numeric_reply, string message, User& user)
 void	Server::sendResponse(string message, User& user)
 {
 	string response;
+	string clientMessage = user.getNick() + "@" + client;
 
-	response = client + " " + message + "\r\n";
+	response = clientMessage + " " + message + "\r\n";
 	std::cout << "Response to send is: " << response << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
@@ -92,7 +94,7 @@ map<string, string> Server::parseChannels(User &u, string channelStr, string key
 	std::istringstream keyStream(keyStr);
     while (getline(chanStream, c, ',') && getline(keyStream, k, ','))
 	{
-		if (!isChannelValid(c))
+		if (!isChannelValid(c) || notInChannelNames(c))
 		{
 			chan_keys.clear();
 			sendResponse("403", c + " :No such channel found", u);
@@ -250,7 +252,7 @@ void	Server::part(User &user, Command c)
 	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 	{
 		Channel& chan = getChannel(it->first);
-		if (!c.getArgs()[1].empty())
+		if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
 			sendToChannel(user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1], getChannel(it->first));
 		else
 			sendToChannel(user.getNick() + " leave channel " + it->first, getChannel(it->first));
@@ -295,7 +297,7 @@ void	Server::kick(User &user, Command c)
 	
 	Channel& chan = getChannel(c.getArgs()[0]);
 	std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
-	if (chan._name.empty())
+	if (notInChannelNames(c.getArgs()[0]))
 		sendResponse("403", c.getArgs()[0] + " :No such channel", user);
 	else if (it == chan._users.end())
 		sendResponse("442", c.getArgs()[0] + " :You're not on that channel", user);
@@ -336,9 +338,97 @@ void	Server::oper(User &user, Command c)
 
 }
 
+vector<string>	Server::parseUsers(User& user, string userStr)
+{
+	vector<string>	userVec;
+	string			u;
+
+	std::istringstream userStream(userStr);
+    while (getline(userStream, u, ','))
+		userVec.push_back(u);
+	return (userVec);
+}
+
+bool	Server::isUserRegistered(string name)
+{
+	for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
+	{
+		if (it->second.getNick() == name)
+			return (true);
+	}
+	return (false);
+}
+
+vector<string> Server::parseChannelPRIVMSG(User &u, string channelStr)
+{
+	vector<string>			channels;
+	string					c;
+
+	std::istringstream chanStream(channelStr);
+    while (getline(chanStream, c, ','))
+	{
+		if (!isChannelValid(c))
+		{
+			channels.clear();
+			sendResponse("401", c + " :No such nicke/channel", u);
+		}
+        channels.push_back(c);
+	}
+	return (channels);
+}
+
 void	Server::privmsg(User &user, Command c)
 {
-	
+	if (c.getArgs().size() != 2)
+		sendResponse("461", "PRIVMSG :Not enough parameters", user);
+	else if (notInChannelNames(c.getArgs()[0]))
+	{
+		vector<string> usernames = parseUsers(user, c.getArgs()[0]);
+		for (vector<string>::iterator it = usernames.begin(); it < usernames.end(); it++)
+		{
+			if (!isUserRegistered(*it))
+				sendResponse("401", *it + " :No such nick/channel", user);
+			else
+			{
+				User&	receiver = getUser(*it);
+				sendResponse(*it + ": " + c.getArgs()[0], receiver);
+			}
+		}
+	}
+	else
+	{
+		vector<string> channelNames = parseChannelPRIVMSG(user, c.getArgs()[0]);
+		if (channelNames.empty())
+			return ;
+		for (vector<string>::iterator it = channelNames.begin(); it != channelNames.end(); it++)
+		{
+			Channel &channel = getChannel(*it);
+			if (!isUserIn(user, *it))
+				sendResponse("404", *it + " :Cannot send to channel", user);
+			else
+			{
+				string message = user.getNick() + "@" + client;
+				sendToChannel(" " + *it + " :" + c.getArgs()[1], channel);
+			}
+		}
+	}
+}
+
+void	Server::mode(User &user, Command c)
+{
+	if (c.getArgs().size() < 1)
+		sendResponse("461", "MODE :Not enough parameters", user);
+	else if (c.getArgs().size() == 1)
+	{
+		if (!isUserRegistered(c.getArgs()[0]))
+			sendResponse("401", c.getArgs()[0] + " :No such nick/channel", user);
+		else if (c.getArgs()[0] != user.getNick())
+			sendResponse("502", " :Cant change mode for other users", user);
+		else
+		{
+			
+		}
+	}
 }
 
 

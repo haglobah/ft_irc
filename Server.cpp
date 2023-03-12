@@ -81,7 +81,7 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "NICK") { nick(u, c); }
 	else if (cmd == "USER") { user(u, c); }
 	else if (cmd == "PING") { ping(u, c); }
-	// else if (cmd == "OPER") { oper(u, c); }
+	else if (cmd == "OPER") { oper(u, c); }
 	else if (cmd == "QUIT") { quit(u, c); }
 
 	// CHANNEL
@@ -89,14 +89,13 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "PART") { part(u, c); }
 	else if (cmd == "TOPIC") { topic(u, c); }
 	else if (cmd == "LIST") { list(u, c); }
-	// else if (cmd == "INVITE") { invite(u, c); }
-	// else if (cmd == "KICK") { kick(u, c); }
+	else if (cmd == "KICK") { kick(u, c); }
 
 	// SERVER
-	// else if (cmd == "MODE") { mode(u, c); }
+	else if (cmd == "MODE") { mode(u, c); }
 
 	// USER
-	// else if (cmd == "PRIVMSG") { privmsg(u, c); }
+	else if (cmd == "PRIVMSG") { privmsg(u, c); }
 	// else if (cmd == "NOTICE") { notice(u, c); }
 	// else if (cmd == "WHO") { who(u, c); }
 	else {}

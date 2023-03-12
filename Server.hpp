@@ -60,6 +60,7 @@ class Server
 		bool	alreadyInUse(std::string mode, std::string name, User user);
 		std::map<std::string, std::string>	parseChannels(User &u, std::string channelStr);
 		std::map<std::string, std::string>	parseChannels(User &u, std::string channelStr, std::string keyStr);
+		std::vector<std::string> parseUsers(User&, std::string);
 
 		void	addUser(std::vector<Channel>::iterator it, User &user);
 		void	joinChannel(std::map<std::string, std::string>::iterator chan_keys, User &user);
@@ -68,6 +69,9 @@ class Server
 		Channel&	getChannel(std::string name);
 		User&	getUser(std::string name);
 		bool	isUserIn(User &u, std::string name);
+		bool	isUserRegistered(std::string name);
+		std::vector<std::string>	parseChannelPRIVMSG(User &u, std::string channelStr);
+
 
 		
 	private:
