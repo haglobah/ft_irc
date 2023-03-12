@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <ctime>
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/poll.h>
@@ -42,7 +43,7 @@ class Server
 		void	user(User &user, Command c);
 		void	ping(User &user, Command c);
 		void	cap(User &user, Command c);
-		// void	oper(User &user, Command c);
+		void	oper(User &user, Command c);
 		void	quit(User &user, Command c);
 		
 		void	join(User &user, Command c);
@@ -50,7 +51,6 @@ class Server
 		void	topic(User &user, Command c);
 		void	list(User &user, Command c);
 		void	kick(User &user, Command c);
-		void	invite(User &user, Command c);
 
 		void	mode(User &user, Command c);
 
@@ -66,6 +66,7 @@ class Server
 		bool	notInChannelNames(std::string channel);
 
 		Channel&	getChannel(std::string name);
+		User&	getUser(std::string name);
 		bool	isUserIn(User &u, std::string name);
 
 		

@@ -168,6 +168,8 @@ void	Server::join(User &user, Command c)
 			 it++)
 		{
 			joinChannel(it, user);
+			Command topicCommand("TOPIC " + it->first);
+			topic(user, topicCommand);
 		}
 	}
 }
@@ -192,28 +194,147 @@ Channel& Server::getChannel(string name)
 		if (it->_name == name)
 			return (*it);
 	}
+	return (*_channels.end());
 }
 
 void	Server::topic(User &user, Command c)
 {
-	std::cout << "TEST" << std::endl;
-	if (c.getArgs().size() > 2)
+	if (c.getArgs().size() > 2 || c.getArgs().size() < 1)
 		sendResponse("461", "TOPIC :Not enough parameters", user);
 	
 	Channel& chan = getChannel(c.getArgs()[0]);
 	std::cout << chan._name << std::endl;
 	if (!isUserIn(user, c.getArgs()[0]))
 		sendResponse("442", c.getArgs()[0] + " :You're not on that channel", user);
-	// else if (c.getArgs().size() == 1)
-		
-	// 	sendResponse();
-	// else if (c.getArgs().size() == 2)
-	// 	chan_keys = parseChannels(user, c.getArgs()[0], c.getArgs()[1]);
+	else if (c.getArgs().size() == 1)
+	{
+		if (chan._topic.empty())
+			sendResponse("331", c.getArgs()[0] + " :No topic is set", user);
+		else
+		{
+			sendResponse("332", c.getArgs()[0] + " :" + chan._topic, user);
+			// REMINDER: add time after getNick
+			sendResponse("333", c.getArgs()[0] + " " + user.getNick() + " " , user);
+		}
+	}
+	else if (c.getArgs().size() == 2)
+	{
+		std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
+		if (chan._modes == TOPIC_RESTRICTED && it->second != OPERATOR)
+		{
+			sendResponse("482", c.getArgs()[0] + " :You're not channel operator", user);
+			return ;
+		}
+		else if (c.getArgs()[1].empty())
+		{
+			chan._topic.clear();
+			sendToChannel("331 " + c.getArgs()[0] + " :No topic is set", chan);
+		}
+		else
+		{
+			chan._topic = c.getArgs()[1];
+			sendToChannel("332" + c.getArgs()[0] + " :" + chan._topic, chan);
+			// REMINDER: add time after getNick
+			sendToChannel("333" + c.getArgs()[0] + " " + user.getNick() + " ", chan);
+		}
+	}
 }
 
-void	list(User &user, Command c);
-void	kick(User &user, Command c);
-void	invite(User &user, Command c);
+void	Server::part(User &user, Command c)
+{
+	if (c.getArgs().size() > 2 || c.getArgs().size() < 1)
+		sendResponse("461", "PART :Not enough parameters", user);
+
+	map<string, string>		chan_keys;
+	chan_keys = parseChannels(user, c.getArgs()[0]);
+	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
+	{
+		Channel& chan = getChannel(it->first);
+		if (!c.getArgs()[1].empty())
+			sendToChannel(user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1], getChannel(it->first));
+		else
+			sendToChannel(user.getNick() + " leave channel " + it->first, getChannel(it->first));
+		getChannel(it->first).removeUser(user);
+	}
+}
+
+void	Server::list(User &user, Command c)
+{
+	if (c.getArgs().size() != 1)
+		sendResponse("461", "LIST :Not enough parameters", user);
+	else
+	{
+		map<string, string>		chan_keys;
+		chan_keys = parseChannels(user, c.getArgs()[0]);
+		for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
+		{
+			Channel chan = getChannel(it->first);
+			sendResponse("322", chan._name + " " + std::to_string(chan._userCount) + " :" + chan._topic ,user);
+		}
+		sendResponse("323", " :End of /LIST", user);
+	}
+}
+
+User& Server::getUser(string name)
+{
+	for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
+	{
+		if (it->second.getNick() == name)
+			return (it->second);
+	}
+	return (_users.end()->second);	
+}
+
+void	Server::kick(User &user, Command c)
+{
+	if (c.getArgs().size() != 2)
+	{
+		sendResponse("461", "KICK :Not enough parameters", user);
+		return ;
+	}
+	
+	Channel& chan = getChannel(c.getArgs()[0]);
+	std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
+	if (chan._name.empty())
+		sendResponse("403", c.getArgs()[0] + " :No such channel", user);
+	else if (it == chan._users.end())
+		sendResponse("442", c.getArgs()[0] + " :You're not on that channel", user);
+	else if (it->second != OPERATOR)
+		sendResponse("482", c.getArgs()[0] + " :You're not channel operator", user);
+	else
+	{
+		User& userToKick = getUser(c.getArgs()[1]);
+		if (!isUserIn(userToKick, c.getArgs()[0]))
+			sendResponse("441", userToKick.getNick() + " " + c.getArgs()[0] + " :They aren't on that channel", user);
+		else
+		{
+			chan.removeUser(userToKick);
+			sendResponse(user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + c.getArgs()[0], user);
+		}
+	}
+	
+}
+
+void	Server::oper(User &user, Command c)
+{
+	if (c.getArgs().size() != 2)
+		sendResponse("461", "OPER :Not enough parameters", user);
+	else
+	{
+		if (_password != c.getArgs()[1])
+			sendResponse("464", ": Password incorrect", user);
+		else
+		{
+			for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+			{
+				map<const User *, Privileges>::iterator channelMap = it->_users.find(&user);
+				channelMap->second = OPERATOR;
+			}
+			sendResponse("381", "You are now an IRC operator", user);
+		}
+	}
+
+}
 
 void	Server::privmsg(User &user, Command c)
 {

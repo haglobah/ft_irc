@@ -86,10 +86,9 @@ void	Server::executeCommand(User &u, Command c)
 
 	// CHANNEL
 	else if (cmd == "JOIN") { join(u, c); }
-	// else if (cmd == "PART") { part(u, c); }
-	// else if (cmd == "TOPIC") { topic(u, c); }
-	// else if (cmd == "NAMES") { names(u, c); }
-	// else if (cmd == "LIST") { list(u, c); }
+	else if (cmd == "PART") { part(u, c); }
+	else if (cmd == "TOPIC") { topic(u, c); }
+	else if (cmd == "LIST") { list(u, c); }
 	// else if (cmd == "INVITE") { invite(u, c); }
 	// else if (cmd == "KICK") { kick(u, c); }
 
