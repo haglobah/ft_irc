@@ -263,19 +263,19 @@ void	Server::oper(User &user, Command c)
 
 }
 
-void	Server::mode(User &user, Command c)
-{
-	if (c.getArgs().size() < 1)
-		sendResponse("461", "MODE :Not enough parameters", user);
-	else if (c.getArgs().size() == 1)
-	{
-		if (!isUserRegistered(c.getArgs()[0]))
-			sendResponse("401", c.getArgs()[0] + " :No such nick/channel", user);
-		else if (c.getArgs()[0] != user.getNick())
-			sendResponse("502", " :Can't change mode for other users", user);
-		else
-		{
+// void	Server::mode(User &user, Command c)
+// {
+// 	if (c.getArgs().size() < 1)
+// 		sendResponse("461", "MODE :Not enough parameters", user);
+// 	else if (c.getArgs().size() == 1)
+// 	{
+// 		if (!isUserRegistered(c.getArgs()[0]))
+// 			sendResponse("401", c.getArgs()[0] + " :No such nick/channel", user);
+// 		else if (c.getArgs()[0] != user.getNick())
+// 			sendResponse("502", " :Can't change mode for other users", user);
+// 		else
+// 		{
 
-		}
-	}
-}
+// 		}
+// 	}
+// }

@@ -1,7 +1,5 @@
 #include "Server.hpp"
 
-#include "commands/commands.hpp"
-
 using std::string;
 using std::cout;
 using std::cerr;
@@ -92,7 +90,7 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "KICK") { kick(u, c); }
 
 	// SERVER
-	else if (cmd == "MODE") { mode(u, c); }
+	// else if (cmd == "MODE") { mode(u, c); }
 
 	// USER
 	else if (cmd == "PRIVMSG") { privmsg(u, c); }

@@ -8,7 +8,6 @@ void	Server::setupPoll(int fd)
 	_userPoll[0].events = POLLIN;
 }
 
-
 int		Server::addConnection(int clientSocket)
 {
 	if (_activePoll >= SOMAXCONN)

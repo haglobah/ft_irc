@@ -53,7 +53,7 @@ class Server
 		void	list(User &user, Command c);
 		void	kick(User &user, Command c);
 
-		void	mode(User &user, Command c);
+		// void	mode(User &user, Command c); // I don't think we need that.
 
 		void	privmsg(User &user, Command c);
 		void	notice(User &user, Command c);
@@ -74,8 +74,6 @@ class Server
 		bool	isUserIn(User &u, std::string name);
 		bool	isUserRegistered(std::string name);
 		std::vector<std::string>	parseChannelPRIVMSG(User &u, std::string channelStr);
-
-
 		
 	private:
 		int 					_port;
@@ -91,7 +89,8 @@ class Server
 		void loop();
 };
 
-bool	isChannelValid(std::string channel);
+bool isChannelValid(std::string channel);
 bool contains(std::string s, std::string chars);
+void to_upper(std::string& str);
 void printsvec(std::vector<std::string> strs);
 std::vector<std::string>	split(std::string str, char delim);

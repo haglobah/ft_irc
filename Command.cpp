@@ -7,12 +7,6 @@ using std::endl;
 
 Command::~Command(){}
 
-static void to_upper(std::string& str)
-{
-	for (std::string::iterator p = str.begin(); str.end() != p; ++p)
-       *p = toupper(*p);
-}
-
 Command::Command(string cmd)
 {
     string		s;    

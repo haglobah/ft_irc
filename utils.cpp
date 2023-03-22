@@ -34,3 +34,9 @@ vector<string>	split(string str, char delim)
 		strVec.push_back(u);
 	return (strVec);
 }
+
+void to_upper(std::string& str)
+{
+	for (std::string::iterator p = str.begin(); str.end() != p; ++p)
+       *p = toupper(*p);
+}
