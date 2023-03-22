@@ -68,11 +68,11 @@ string	getCommand(string& buf)
 	return (cmd);
 }
 
-
 void	Server::executeCommand(User &u, Command c)
 {
 	std::string cmd = c.getName();
-	cout << "Command is: " << cmd << endl;
+	cout << "Command is: |" << cmd << ";" << endl;
+	printsvec(c.getArgs());
 
 	// CONNECTION
 	if 		(cmd == "PASS") { pass(u, c); }

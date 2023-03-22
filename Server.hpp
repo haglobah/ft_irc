@@ -89,3 +89,4 @@ class Server
 };
 
 bool contains(std::string s, std::string chars);
+void printsvec(std::vector<std::string> strs);

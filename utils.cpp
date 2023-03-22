@@ -14,3 +14,13 @@ bool contains(string s, string chars)
 	}
 	return (false);
 }
+
+void printsvec(std::vector<std::string> strs)
+{
+	std::cout << "[ ";
+	for (int i = 0; i < strs.size(); i++)
+	{
+		std::cout << strs[i] << " ";
+	}
+	std::cout << "]" << std::endl;
+}
