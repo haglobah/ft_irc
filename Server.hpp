@@ -90,7 +90,7 @@ class Server
 };
 
 bool isChannelValid(std::string channel);
-bool contains(std::string s, std::string chars);
+bool contains(std::string &haystack, std::string const &needles);
 void to_upper(std::string& str);
 void printsvec(std::vector<std::string> strs);
 std::vector<std::string>	split(std::string str, char delim);

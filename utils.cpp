@@ -4,11 +4,11 @@ using std::string;
 using std::vector;
 using std::map;
 
-bool contains(string s, string chars)
+bool contains(string &haystack, string const &needles)
 {
-	for (unsigned int i = 0; i < chars.length(); i++)
+	for (u_int32_t i = 0; i < needles.length(); i++)
 	{
-		if (s.find(chars[i]) != string::npos)
+		if (haystack.find(needles[i]) != string::npos)
 			return (true);
 	}
 	return (false);
@@ -17,7 +17,7 @@ bool contains(string s, string chars)
 void printsvec(std::vector<std::string> strs)
 {
 	std::cout << "[ ";
-	for (unsigned int i = 0; i < strs.size(); i++)
+	for (u_int32_t i = 0; i < strs.size(); i++)
 	{
 		std::cout << strs[i] << " ";
 	}

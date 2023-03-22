@@ -6,24 +6,14 @@ using std::cerr;
 using std::endl;
 using std::pair;
 
-static bool containsChars(string &haystack, string const &needles)
-{
-	for (u_int32_t i = 0; i < haystack.size(); i++)
-	{
-		if (needles.find(haystack[i]) != string::npos)
-			return true;
-	}
-	return false;
-}
-
-static bool invalid(long port)
+bool invalid(long port)
 {
 	return (port <= 0 || port > 65535 || errno == ERANGE);
 }
 
-static bool invalid(string password)
+bool invalid(string password)
 {
-	return (password.empty() || containsChars(password, ":,"));
+	return (password.empty() || contains(password, ":,"));
 }
 
 Server::Server(int argc, char **argv){

@@ -19,10 +19,12 @@ void	Channel::addUser(User &u)
 
 void	Channel::removeUser(User &u)
 {
+	// REMINDER
 	(void)u;
 }
 
 void	updatePrivileges(User &u)
 {
+	// REMINDER
 	(void)u;
 }
