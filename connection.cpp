@@ -45,20 +45,23 @@ bool Server::alreadyInUse(string mode, string name, User user)
 
 void	Server::nick(User &user, Command c)
 {
+
 	if (c.getArgs().size() != 1)
 		sendResponse("461", "NICK :Not enough parameters", user);
+	// std::cout << "Before get contains?" << std::endl;
+	// REMINDER: bad_malloc happens here and doenst even go into contains
 	else if (contains(c.getArgs()[1], ":/\0"))
 		sendResponse("432", c.getArgs()[0] + " :Erroneus nickname", user);
 	else if (alreadyInUse("nick", c.getArgs()[0], user))
 		sendResponse("433", c.getArgs()[0] + " :Nickname is already in use", user);
 	else
 	{
+		std::cout << "here?" << std::endl;
 		string oldNickname(user.getNick());
 
 		user.setNick(c.getArgs()[0]);
-		sendResponse(oldNickname + "changed his nickname to " + user.getNick(), user);
+		sendResponse(oldNickname + " changed his nickname to " + user.getNick(), user);
 	}
-
 }
 
 void	Server::user(User &user, Command c)
