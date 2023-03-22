@@ -80,10 +80,12 @@ void	Server::user(User &user, Command c)
 
 void	Server::ping(User &user, Command c)
 {
-	if (c.getArgs().size() != 1)
-		sendResponse("461", "PING :Not enough parameters", user);
-	else
+	if (c.getArgs().size() > 1)
+		sendResponse("461", "PING :Too many parameters", user);
+	else if (c.getArgs().size() == 1)
 		sendResponse("PONG message from " + client + " to " + c.getArgs()[0] , user);
+	else
+		sendResponse("PONG message from " + client , user);
 }
 
 void	Server::cap(User &user, Command c)
