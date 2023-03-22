@@ -23,7 +23,7 @@ void	Server::pass(User &user, Command c)
 	}
 }
 
-bool Server::alreadyInUse(string mode, string name, User user)
+bool Server::alreadyInUse(string mode, string name)
 {
 	std::map<int, User>::iterator it = _users.begin();
 	
@@ -48,12 +48,13 @@ void	Server::nick(User &user, Command c)
 
 	if (c.getArgs().size() != 1)
 		sendResponse("461", "NICK :Not enough parameters", user);
-	// std::cout << "Before get contains?" << std::endl;
-	// REMINDER: bad_malloc happens here and doenst even go into contains
-	else if (contains(c.getArgs()[1], ":/\0"))
+	else if (contains(c.getArgs()[0], ":/\0"))
 		sendResponse("432", c.getArgs()[0] + " :Erroneus nickname", user);
-	else if (alreadyInUse("nick", c.getArgs()[0], user))
+	else if (alreadyInUse("nick", c.getArgs()[0]))
+	{	
+		std::cout << "IN IN USE" << std::endl;
 		sendResponse("433", c.getArgs()[0] + " :Nickname is already in use", user);
+	}
 	else
 	{
 		std::cout << "here?" << std::endl;
@@ -68,7 +69,7 @@ void	Server::user(User &user, Command c)
 {
 	if (c.getArgs().size() != 4 || c.getArgs()[0].empty())
 		sendResponse("461", "USER :Not enough parameters", user);
-	else if (alreadyInUse("user", c.getArgs()[0], user))
+	else if (alreadyInUse("user", c.getArgs()[0]))
 		sendResponse("462"," :You may not reregister", user);
 	else
 	{
@@ -80,12 +81,17 @@ void	Server::user(User &user, Command c)
 
 void	Server::ping(User &user, Command c)
 {
-	if (c.getArgs().size() > 1)
-		sendResponse("461", "PING :Too many parameters", user);
+	if (c.getArgs().size() < 1)
+		sendResponse("461", "PING :Not enough parameters", user);
 	else if (c.getArgs().size() == 1)
 		sendResponse("PONG message from " + client + " to " + c.getArgs()[0] , user);
 	else
-		sendResponse("PONG message from " + client , user);
+	{
+		string args;
+		for (unsigned int i = 0; i < c.getArgs().size(); i++)
+			args += c.getArgs()[i] + " ";
+		sendResponse("PONG message from " + client + " " + args, user);
+	}
 }
 
 void	Server::cap(User &user, Command c)
@@ -102,7 +108,7 @@ void	Server::quit(User &user, Command c)
 	else
 	{
 		string response;
-		for (int i = 0; i < c.getArgs().size(); i++)
+		for (unsigned int i = 0; i < c.getArgs().size(); i++)
 			response.append(c.getArgs()[i] + " ");
 		sendResponse("Quit: " + response, user);
 	}

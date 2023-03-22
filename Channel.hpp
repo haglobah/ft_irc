@@ -38,7 +38,7 @@ class Channel
 		Channel(std::string name);
 		~Channel();
 
-		void	addUser(User u);
+		void	addUser(User &u);
 		void	removeUser(User &u);
 		
 		void	updatePrivileges(User &u);

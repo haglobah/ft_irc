@@ -48,7 +48,7 @@ void Server::run(void)
 	setupPoll(_listeningSocket);
 	while (!_stop)
 	{ 
-		loop(_listeningSocket);
+		loop();
 	}
 	close(_listeningSocket);
 }
@@ -77,10 +77,10 @@ void	Server::executeCommand(User &u, Command c)
 	// CONNECTION
 	if 		(cmd == "PASS") { pass(u, c); }
 	else if (cmd == "CAP") { cap(u, c); }
-	else if (!u.isRegistered())	{ sendResponse("", "You need to register first!", u); }
+	else if (cmd == "PING") { ping(u, c); }
 	else if (cmd == "NICK") { nick(u, c); }
 	else if (cmd == "USER") { user(u, c); }
-	else if (cmd == "PING") { ping(u, c); }
+	else if (!u.isRegistered())	{ sendResponse("", "You need to register first!", u); }
 	else if (cmd == "OPER") { oper(u, c); }
 	else if (cmd == "QUIT") { quit(u, c); }
 
@@ -157,10 +157,8 @@ void	Server::acceptUser()
     cout << "Hostmask: " << host << " Client Socket: " << clientSocket << " Client added!" << endl;
 }
 
-void Server::loop(int fd)
+void Server::loop()
 {
-	static int counter;
-
 	if (poll(_userPoll, _activePoll, 5000) == -1)
 		throw activePollFull();
 	for (int i = 0; i < _activePoll; i++)

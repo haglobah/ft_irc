@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-User::User(int fd, std::string hostmask): _userFd(fd), _hostmask(hostmask), _name(""), _isDisconnected(0){}
+User::User(int fd, std::string hostmask): _nick(""), _name(""), _hostmask(hostmask), _userFd(fd), _allowConnection(true) , _isDisconnected(0){}
 
 int	User::getFD() const {return (this->_userFd);}
 
@@ -18,6 +18,8 @@ void	User::setBuffer(std::string cmd) {_buf = cmd;}
 
 bool	User::isDisconnected() const {return (_isDisconnected);}
 void	User::setDisconnected() {_isDisconnected = true;}
+
+bool	User::getAllowConnection() const {return (_allowConnection);}
 
 bool	User::isRegistered() {return (_isRegistered);}
 void	User::registrate() {_isRegistered = true;}

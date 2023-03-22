@@ -3,7 +3,7 @@ NAME := ircserv
 SRC := $(wildcard *.cpp)
 HEADS := $(wildcard *.hpp)
 
-CPPFLAGS := -std=c++98 #-Wall -Wextra -Werror
+CPPFLAGS := -std=c++98 -ILeakSanitizer/include -LLeakSanitizer -llsan -lc++ -Wall -Wextra #-Werror
 
 all : $(NAME)
 

@@ -55,18 +55,19 @@ class Server
 		void	mode(User &user, Command c);
 
 		void	privmsg(User &user, Command c);
+		// void	notice(User &user, Command c);
 		void	who(User &user, Command c);
 
-		bool	alreadyInUse(std::string mode, std::string name, User user);
+		bool	alreadyInUse(std::string mode, std::string name);
 		std::map<std::string, std::string>	parseChannels(User &u, std::string channelStr);
 		std::map<std::string, std::string>	parseChannels(User &u, std::string channelStr, std::string keyStr);
-		std::vector<std::string> parseUsers(User&, std::string);
+		std::vector<std::string> parseUsers(std::string);
 
 		void	addUser(std::vector<Channel>::iterator it, User &user);
 		void	joinChannel(std::map<std::string, std::string>::iterator chan_keys, User &user);
 		bool	notInChannelNames(std::string channel);
 
-		Channel&	getChannel(std::string name);
+		std::vector<Channel>::iterator	getChannel(std::string name);
 		User&	getUser(std::string name);
 		bool	isUserIn(User &u, std::string name);
 		bool	isUserRegistered(std::string name);
@@ -79,13 +80,13 @@ class Server
 		std::string				_password;
 		pollfd					_userPoll[SOMAXCONN];
 		nfds_t 					_activeUsers;
-		unsigned int			_activePoll;
+		int			_activePoll;
 		bool					_stop;
 		int 					_listeningSocket;
 		std::map<int, User>		_users;
 		std::vector<Channel>	_channels;
 
-		void loop(int fd);
+		void loop();
 };
 
 bool contains(std::string s, std::string chars);

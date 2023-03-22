@@ -34,6 +34,8 @@ class User
 		bool		isDisconnected() const;
 		void		setDisconnected();
 
+		bool		getAllowConnection() const;
+
 		bool		isRegistered();
 		void		registrate();
 };

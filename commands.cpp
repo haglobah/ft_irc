@@ -30,7 +30,7 @@ void	Server::sendResponse(string message, User& user)
 	response = clientMessage + " " + message + "\r\n";
 	std::cout << "Response to send is: " << response << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
-		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
+		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 	if (user.isDisconnected())
 		removeUser(user);
 }
@@ -68,20 +68,20 @@ bool	Server::notInChannelNames(string channel)
 
 map<string, string> Server::parseChannels(User &u, string channelStr)
 {
-	map<string, string>		chan_keys;
+	map<string, string>		channels;
 	string					c;
 
 	std::istringstream chanStream(channelStr);
     while (getline(chanStream, c, ','))
 	{
-		if (!isChannelValid(c) || notInChannelNames(c))
+		if (!isChannelValid(c))
 		{
-			chan_keys.clear();
+			channels.clear();
 			sendResponse("403", c + " :No such channel found", u);
 		}
-        chan_keys.insert(std::pair<string, string>(c, ""));
+        channels.insert(std::pair<string, string>(c, ""));
 	}
-	return (chan_keys);
+	return (channels);
 }
 
 map<string, string> Server::parseChannels(User &u, string channelStr, string keyStr)
@@ -148,7 +148,9 @@ void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
 		}
 	}
 	_channels.push_back(Channel(chan_key->first));
-	addUser(_channels.end()--, user);
+	std::cout << "Channel 1: " << _channels[0]._name << std::endl;
+	// REMINDER: segfault happens in addUser
+	addUser(_channels.end() - 1, user);
 }
 
 void	Server::join(User &user, Command c)
@@ -169,6 +171,7 @@ void	Server::join(User &user, Command c)
 			 it != chan_keys.end();
 			 it++)
 		{
+			std::cout << "Before join channel" << std::endl;
 			joinChannel(it, user);
 			Command topicCommand("TOPIC " + it->first);
 			topic(user, topicCommand);
@@ -189,15 +192,14 @@ bool Server::isUserIn(User &u, string name)
 	return (false);
 }
 
-Channel& Server::getChannel(string name)
+vector<Channel>::iterator Server::getChannel(string name)
 {
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
 		if (it->_name == name)
-			return (*it);
+			return (it);
 	}
-	Channel emptyChannel;
-	return (emptyChannel);
+	return (_channels.end());
 }
 
 void	Server::topic(User &user, Command c)
@@ -208,19 +210,19 @@ void	Server::topic(User &user, Command c)
 		sendResponse("442", c.getArgs()[0] + " :You're not on that channel", user);
 	if (c.getArgs().size() == 1)
 	{
-		Channel& chan = getChannel(c.getArgs()[0]);
-		if (chan._topic.empty())
+		vector<Channel>::iterator chan_it = getChannel(c.getArgs()[0]);
+		if (chan_it->_topic.empty())
 			sendResponse("331", c.getArgs()[0] + " :No topic is set", user);
 		else
 		{
-			sendResponse("332", c.getArgs()[0] + " :" + chan._topic, user);
+			sendResponse("332", c.getArgs()[0] + " :" + chan_it->_topic, user);
 			// REMINDER: add time after getNick
 			sendResponse("333", c.getArgs()[0] + " " + user.getNick() + " " , user);
 		}
 	}
 	else if (c.getArgs().size() == 2)
 	{
-		Channel& chan = getChannel(c.getArgs()[0]);
+		Channel& chan = *getChannel(c.getArgs()[0]);
 		std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
 		if (chan._modes == TOPIC_RESTRICTED && it->second != OPERATOR)
 		{
@@ -251,12 +253,11 @@ void	Server::part(User &user, Command c)
 	chan_keys = parseChannels(user, c.getArgs()[0]);
 	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 	{
-		Channel& chan = getChannel(it->first);
 		if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
-			sendToChannel(user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1], getChannel(it->first));
+			sendToChannel(user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1], *getChannel(it->first));
 		else
-			sendToChannel(user.getNick() + " leave channel " + it->first, getChannel(it->first));
-		getChannel(it->first).removeUser(user);
+			sendToChannel(user.getNick() + " leave channel " + it->first, *getChannel(it->first));
+		getChannel(it->first)->removeUser(user);
 	}
 }
 
@@ -270,7 +271,7 @@ void	Server::list(User &user, Command c)
 		chan_keys = parseChannels(user, c.getArgs()[0]);
 		for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 		{
-			Channel chan = getChannel(it->first);
+			Channel chan = *getChannel(it->first);
 			sendResponse("322", chan._name + " " + std::to_string(chan._userCount) + " :" + chan._topic ,user);
 		}
 		sendResponse("323", " :End of /LIST", user);
@@ -295,7 +296,7 @@ void	Server::kick(User &user, Command c)
 		return ;
 	}
 	
-	Channel& chan = getChannel(c.getArgs()[0]);
+	Channel& chan = *getChannel(c.getArgs()[0]);
 	std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
 	if (notInChannelNames(c.getArgs()[0]))
 		sendResponse("403", c.getArgs()[0] + " :No such channel", user);
@@ -338,7 +339,7 @@ void	Server::oper(User &user, Command c)
 
 }
 
-vector<string>	Server::parseUsers(User& user, string userStr)
+vector<string>	Server::parseUsers(string userStr)
 {
 	vector<string>	userVec;
 	string			u;
@@ -383,7 +384,7 @@ void	Server::privmsg(User &user, Command c)
 		sendResponse("461", "PRIVMSG :Not enough parameters", user);
 	else if (notInChannelNames(c.getArgs()[0]))
 	{
-		vector<string> usernames = parseUsers(user, c.getArgs()[0]);
+		vector<string> usernames = parseUsers(c.getArgs()[0]);
 		for (vector<string>::iterator it = usernames.begin(); it < usernames.end(); it++)
 		{
 			if (!isUserRegistered(*it))
@@ -402,7 +403,7 @@ void	Server::privmsg(User &user, Command c)
 			return ;
 		for (vector<string>::iterator it = channelNames.begin(); it != channelNames.end(); it++)
 		{
-			Channel &channel = getChannel(*it);
+			Channel &channel = *getChannel(*it);
 			if (!isUserIn(user, *it))
 				sendResponse("404", *it + " :Cannot send to channel", user);
 			else
