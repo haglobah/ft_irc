@@ -96,7 +96,7 @@ void	Server::executeCommand(User &u, Command c)
 
 	// USER
 	else if (cmd == "PRIVMSG") { privmsg(u, c); }
-	// else if (cmd == "NOTICE") { notice(u, c); }
+	else if (cmd == "NOTICE") { notice(u, c); }
 	// else if (cmd == "WHO") { who(u, c); }
 	else {}
 }

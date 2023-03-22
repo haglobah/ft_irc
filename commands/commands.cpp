@@ -1,70 +1,8 @@
-// #include "commands.hpp"
-#include "Server.hpp"
+#include "../Server.hpp"
 
 using std::string;
 using std::vector;
 using std::map;
-
-namespace {
-	const string client = "www.ft_irc.de";
-}
-
-void	Server::sendResponse(string numeric_reply, string message, User& user)
-{
-	string response;
-	string clientMessage = user.getNick() + "@" + client;
-
-	response = clientMessage + " " + numeric_reply + " " + message + "\r\n";
-	std::cout << "Response to send is: " << response << std::endl;
-	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
-		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
-	if (user.isDisconnected())
-		removeUser(user);
-}
-
-void	Server::sendResponse(string message, User& user)
-{
-	string response;
-	string clientMessage = user.getNick() + "@" + client;
-
-	response = clientMessage + " " + message + "\r\n";
-	std::cout << "Response to send is: " << response << std::endl;
-	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
-		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
-	if (user.isDisconnected())
-		removeUser(user);
-}
-
-void	Server::sendToChannel(string message, Channel c)
-{ 
-	std::cout << "Message to the channel is: " << message << std::endl;
-	for(map<const User *, Privileges>::iterator it = c._users.begin();
-		it != c._users.end();
-		it++)
-	{
-		if (send(it->first->getFD(), message.c_str(), message.length(), 0) == -1)
-			std::cout << "Couldn't send the message to FD in the channel:" << it->first->getFD() << std::endl;
-	}
-}
-
-bool	isChannelValid(string channel)
-{
-	if (contains(channel, "\7"))
-		return (false);
-	return (true); 
-}
-
-bool	Server::notInChannelNames(string channel)
-{
-	for (std::vector<Channel>::iterator it = _channels.begin();
-		 it != _channels.end();
-		 it++)
-		{
-			if (it->_name == channel)
-				return (false);
-		}
-	return (true);
-}
 
 map<string, string> Server::parseChannels(User &u, string channelStr)
 {
@@ -149,7 +87,6 @@ void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
 	}
 	_channels.push_back(Channel(chan_key->first));
 	std::cout << "Channel 1: " << _channels[0]._name << std::endl;
-	// REMINDER: segfault happens in addUser
 	addUser(_channels.end() - 1, user);
 }
 
@@ -179,19 +116,6 @@ void	Server::join(User &user, Command c)
 	}
 }
 
-void	part(User &user, Command c);
-
-bool Server::isUserIn(User &u, string name)
-{
-	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	{
-		if (it->_name == name)
-			if (it->_users.find(&u) != it->_users.end())
-				return (true);
-	}
-	return (false);
-}
-
 vector<Channel>::iterator Server::getChannel(string name)
 {
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
@@ -208,7 +132,7 @@ void	Server::topic(User &user, Command c)
 		sendResponse("461", "TOPIC :Not enough parameters", user);
 	else if (!isUserIn(user, c.getArgs()[0]))
 		sendResponse("442", c.getArgs()[0] + " :You're not on that channel", user);
-	if (c.getArgs().size() == 1)
+	else if (c.getArgs().size() == 1)
 	{
 		vector<Channel>::iterator chan_it = getChannel(c.getArgs()[0]);
 		if (chan_it->_topic.empty())
@@ -339,82 +263,6 @@ void	Server::oper(User &user, Command c)
 
 }
 
-vector<string>	Server::parseUsers(string userStr)
-{
-	vector<string>	userVec;
-	string			u;
-
-	std::istringstream userStream(userStr);
-    while (getline(userStream, u, ','))
-		userVec.push_back(u);
-	return (userVec);
-}
-
-bool	Server::isUserRegistered(string name)
-{
-	for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
-	{
-		if (it->second.getNick() == name)
-			return (true);
-	}
-	return (false);
-}
-
-vector<string> Server::parseChannelPRIVMSG(User &u, string channelStr)
-{
-	vector<string>			channels;
-	string					c;
-
-	std::istringstream chanStream(channelStr);
-    while (getline(chanStream, c, ','))
-	{
-		if (!isChannelValid(c))
-		{
-			channels.clear();
-			sendResponse("401", c + " :No such nicke/channel", u);
-		}
-        channels.push_back(c);
-	}
-	return (channels);
-}
-
-void	Server::privmsg(User &user, Command c)
-{
-	if (c.getArgs().size() != 2)
-		sendResponse("461", "PRIVMSG :Not enough parameters", user);
-	else if (notInChannelNames(c.getArgs()[0]))
-	{
-		vector<string> usernames = parseUsers(c.getArgs()[0]);
-		for (vector<string>::iterator it = usernames.begin(); it < usernames.end(); it++)
-		{
-			if (!isUserRegistered(*it))
-				sendResponse("401", *it + " :No such nick/channel", user);
-			else
-			{
-				User&	receiver = getUser(*it);
-				sendResponse(*it + ": " + c.getArgs()[0], receiver);
-			}
-		}
-	}
-	else
-	{
-		vector<string> channelNames = parseChannelPRIVMSG(user, c.getArgs()[0]);
-		if (channelNames.empty())
-			return ;
-		for (vector<string>::iterator it = channelNames.begin(); it != channelNames.end(); it++)
-		{
-			Channel &channel = *getChannel(*it);
-			if (!isUserIn(user, *it))
-				sendResponse("404", *it + " :Cannot send to channel", user);
-			else
-			{
-				string message = user.getNick() + "@" + client;
-				sendToChannel(" " + *it + " :" + c.getArgs()[1], channel);
-			}
-		}
-	}
-}
-
 void	Server::mode(User &user, Command c)
 {
 	if (c.getArgs().size() < 1)
@@ -424,12 +272,10 @@ void	Server::mode(User &user, Command c)
 		if (!isUserRegistered(c.getArgs()[0]))
 			sendResponse("401", c.getArgs()[0] + " :No such nick/channel", user);
 		else if (c.getArgs()[0] != user.getNick())
-			sendResponse("502", " :Cant change mode for other users", user);
+			sendResponse("502", " :Can't change mode for other users", user);
 		else
 		{
 
 		}
 	}
 }
-
-

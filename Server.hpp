@@ -33,6 +33,7 @@ class Server
 
 		void	run(void);
 
+		// SEND
 		void	sendResponse(std::string, std::string, User &);
 		void 	sendResponse(std::string message, User& user);
 		void	sendToChannel(std::string message, Channel c);
@@ -55,7 +56,7 @@ class Server
 		void	mode(User &user, Command c);
 
 		void	privmsg(User &user, Command c);
-		// void	notice(User &user, Command c);
+		void	notice(User &user, Command c);
 		void	who(User &user, Command c);
 
 		bool	alreadyInUse(std::string mode, std::string name);
@@ -66,6 +67,7 @@ class Server
 		void	addUser(std::vector<Channel>::iterator it, User &user);
 		void	joinChannel(std::map<std::string, std::string>::iterator chan_keys, User &user);
 		bool	notInChannelNames(std::string channel);
+		bool	inChannelNames(std::string channel);
 
 		std::vector<Channel>::iterator	getChannel(std::string name);
 		User&	getUser(std::string name);
@@ -89,5 +91,7 @@ class Server
 		void loop();
 };
 
+bool	isChannelValid(std::string channel);
 bool contains(std::string s, std::string chars);
 void printsvec(std::vector<std::string> strs);
+std::vector<std::string>	split(std::string str, char delim);

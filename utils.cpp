@@ -23,3 +23,14 @@ void printsvec(std::vector<std::string> strs)
 	}
 	std::cout << "]" << std::endl;
 }
+
+vector<string>	split(string str, char delim)
+{
+	vector<string>	strVec;
+	string			u;
+
+	std::istringstream sstream(str);
+    while (getline(sstream, u, delim))
+		strVec.push_back(u);
+	return (strVec);
+}

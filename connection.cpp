@@ -75,7 +75,7 @@ void	Server::user(User &user, Command c)
 	{
 		user.setName(c.getArgs()[0]);
 		user.setFull(c.getArgs()[3]);
-		sendResponse("User gets registered with username '" + user.getName() + "' and real name \"" + user.getFull() + "\"", user);
+		sendResponse("001", "User gets registered with username '" + user.getName() + "' and real name \"" + user.getFull() + "\"", user);
 	}
 }
 
@@ -104,13 +104,16 @@ void	Server::quit(User &user, Command c)
 {
 	// REMINDER: message needs to get send to channel
 	if (c.getArgs().size() == 0)
+	{
+		removeUser(user);
 		sendResponse("Quit: ", user);
+	}
 	else
 	{
 		string response;
 		for (unsigned int i = 0; i < c.getArgs().size(); i++)
 			response.append(c.getArgs()[i] + " ");
+		removeUser(user);
 		sendResponse("Quit: " + response, user);
 	}
-	removeUser(user);
 }
