@@ -71,7 +71,7 @@ string	getCommand(string& buf)
 void	Server::executeCommand(User &u, Command c)
 {
 	std::string cmd = c.getName();
-	cout << "Command is: |" << cmd << ";" << endl;
+	cout << "Command is: |" << cmd << "|";
 	printsvec(c.getArgs());
 
 	// CONNECTION

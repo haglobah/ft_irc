@@ -12,7 +12,7 @@ $(NAME) : $(SRC) $(HEADS) Makefile
 
 run :
 	$(MAKE) all
-	./$(NAME) 20 password
+	./$(NAME) 4242 password
 
 clean :
 	rm -f *.o
