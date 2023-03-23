@@ -4,6 +4,10 @@ using std::string;
 using std::vector;
 using std::map;
 
+namespace {
+	const string client = ":ft_irc.de ";
+}
+
 map<string, string> Server::parseChannels(User &u, string channelStr)
 {
 	map<string, string>		channels;
@@ -56,13 +60,42 @@ map<string, string> Server::parseChannels(User &u, string channelStr, string key
 	return (chan_keys);
 }
 
-void	Server::addUser(std::vector<Channel>::iterator it, User &user)
+string	getUsersIn(vector<Channel>::iterator chan_it)
 {
-	it->addUser(user);
-	sendToChannel(user.getName() + " is joining the channel " + it->_name, *it);
-	
-	Command show_topic("TOPIC " + it->_name);
-	topic(user, show_topic);
+	string	usersInChannel;
+
+	for (map<const User *, Privileges>::iterator it = chan_it->_users.begin(); it != chan_it->_users.end(); it++)
+	{
+		usersInChannel += it->first->getNick();
+		if (it != chan_it->_users.end())
+			usersInChannel += " ";
+	}
+	return (usersInChannel);
+}
+
+void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
+{
+	string	channelName = chan_it->_name;
+	string	userName = user.getName();
+	chan_it->addUser(&user);
+	// sendToChannel(userName + "@localhost JOIN :" + channelName, *chan_it);
+	string start = ":" + user.getNick() + "!" + user.getName() + "@" + user.getHostmask() + " JOIN :" + channelName + "\r\n"; 
+	string response;
+	if (chan_it->_topic.empty())
+		response = ":ft_irc.de 332 " + user.getNick() + " " + channelName + " :No topic is set\r\n";
+	else
+		response = ":ft_irc.de 332 " + user.getNick() + " " + channelName + " :" + chan_it->_topic + "\r\n";
+	string response1 = ":ft_irc.de 353 " + user.getNick() + " = " + channelName + " :@" + channelName + " " + getUsersIn(chan_it) + "\r\n";
+	string response2 = ":ft_irc.de 366 " + user.getNick() + " " + channelName + " :End of /NAMES list\r\n";
+	string response3 = ":ft_irc.de 321 " + user.getNick() + " Channel :Users Name\r\n";
+	string response4;
+	if (chan_it->_topic.empty())
+		response4 = ":ft_irc.de 322 " + user.getNick() + " " + channelName + " :No topic is set\r\n";
+	else
+		response4 = ":ft_irc.de 322 " + user.getNick() + " " + channelName + " :" + chan_it->_topic + "\r\n";
+	string response5 = ":ft_irc.de 323 " + user.getNick() + " :End of /LIST";
+	sendResponseJoin(start + response + response1 + response2 + response3 + response4 + response5, user);
+	chan_it->showUsers();
 }
 
 void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
@@ -86,7 +119,6 @@ void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
 		}
 	}
 	_channels.push_back(Channel(chan_key->first));
-	std::cout << "Channel 1: " << _channels[0]._name << std::endl;
 	addUser(_channels.end() - 1, user);
 }
 
@@ -108,10 +140,7 @@ void	Server::join(User &user, Command c)
 			 it != chan_keys.end();
 			 it++)
 		{
-			std::cout << "Before join channel" << std::endl;
 			joinChannel(it, user);
-			Command topicCommand("TOPIC " + it->first);
-			topic(user, topicCommand);
 		}
 	}
 }
@@ -263,19 +292,38 @@ void	Server::oper(User &user, Command c)
 
 }
 
-// void	Server::mode(User &user, Command c)
-// {
-// 	if (c.getArgs().size() < 1)
-// 		sendResponse("461", "MODE :Not enough parameters", user);
-// 	else if (c.getArgs().size() == 1)
-// 	{
-// 		if (!isUserRegistered(c.getArgs()[0]))
-// 			sendResponse("401", c.getArgs()[0] + " :No such nick/channel", user);
-// 		else if (c.getArgs()[0] != user.getNick())
-// 			sendResponse("502", " :Can't change mode for other users", user);
-// 		else
-// 		{
+void Server::who(User &user, Command c)
+{
+	string resp;
 
-// 		}
-// 	}
-// }
+	if (c.getArgs().size() > 1)
+		sendResponse("461", "WHO :Too many parameters", user);
+	else
+	{
+		for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
+		{
+			resp += client + "352 " + user.getNick() + " * " 
+				+ it->second.getName() + " * " + client + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
+		}
+		resp += client + "315 " + user.getNick() + "* :End of /WHO list";
+	}
+	sendResponse(resp, user);
+}
+
+void	Server::mode(User &user, Command c)
+{
+	if (c.getArgs().size() < 1)
+		sendResponse("461", "MODE :Not enough parameters", user);
+	else if (c.getArgs().size() == 1)
+	{
+		string target = c.getArgs()[0];
+		if (!isUserRegistered(target))
+			sendResponse("401", target + " :No such nick/channel", user);
+		else if (target != user.getNick())
+			sendResponse("502", " :Can't change mode for other users", user);
+		else
+		{
+
+		}
+	}
+}

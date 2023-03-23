@@ -5,20 +5,16 @@ using std::vector;
 using std::map;
 
 namespace {
-	const string client = "www.ft_irc.de";
+	const string client = ":ft_irc.de ";
 }
 
 void	Server::sendResponse(string numeric_reply, string message, User& user)
 {
 	string response;
-	string clientMessage = ":" + client;
 
-	response = clientMessage + " " + numeric_reply + " " + user.getNick() + " " + message + "\r\n";
-	std::cout << "Response to send is: " << response << std::endl;
-	// if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
-	if (user.getFD() == 3)
-		;
-	else if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
+	response = client + numeric_reply + " " + user.getNick() + " :" + message + "\r\n";
+	std::cout << "Response to send is|" << response << "| to: " << user.getFD() << std::endl;
+	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
 	if (user.isDisconnected())
 		removeUser(user);
@@ -27,13 +23,22 @@ void	Server::sendResponse(string numeric_reply, string message, User& user)
 void	Server::sendResponse(string message, User& user)
 {
 	string response;
-	string clientMessage = ":" + client;
 
-	response = clientMessage + " " + user.getNick() + " " + message + "\r\n";
+	response = client + user.getNick() + " :" + message + "\r\n";
 	std::cout << "Response to send is: " << response << std::endl;
-	if (user.getFD() == 3)
-		;
-	else if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
+	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
+		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
+	if (user.isDisconnected())
+		removeUser(user);
+}
+
+void	Server::sendResponseJoin(string message, User& user)
+{
+	string response;
+
+	response = message + "\r\n";
+	std::cout << "Response to send is: " << response << std::endl;
+	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 	if (user.isDisconnected())
 		removeUser(user);
@@ -66,7 +71,8 @@ void	Server::privmsg(User &user, Command c)
 		if (isUserRegistered(target))
 		{
 			User&	receiver = getUser(target);
-			sendResponse(user.getNick() + ": " + c.getArgs()[1], receiver);
+			string sender = ":" + user.getNick() + "!" + user.getName();
+			sendResponseJoin(sender + " PRIVMSG " + receiver.getNick() + " :" + c.getArgs()[1], receiver);
 		}
 		else if (inChannelNames(target))
 		{
@@ -75,8 +81,8 @@ void	Server::privmsg(User &user, Command c)
 				sendResponse("404", user.getNick() + " :Cannot send to channel", user);
 			else
 			{
-				string sender = user.getNick() + "@" + client;
-				sendToChannel(sender + " #" + channel._name + " :" + c.getArgs()[1], channel);
+				string sender = ":" + user.getNick() + "!" + user.getName();
+				sendToChannel(sender + " PRIVMSG " + channel._name + " :" + c.getArgs()[1] + "\r\n", channel);
 			}
 		}
 		else 

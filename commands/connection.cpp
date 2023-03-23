@@ -5,7 +5,7 @@ using std::vector;
 using std::map;
 
 namespace {
-	const string client = "www.ft_irc.de";
+	const string client = "ft_irc.de";
 }
 
 void	Server::pass(User &user, Command c)
@@ -19,7 +19,10 @@ void	Server::pass(User &user, Command c)
 	else
 	{
 		user.registrate();
-		sendResponse("001", "Welcome to the " + client + " Network!" + user.getNick(), user);
+		string	response1 = "001 " + user.getNick() + " :Welcome to the " + client + " Network!\r\n";
+		string	response2 = "321 " + user.getNick() + "Channel :Users Name\r\n";
+		string	response3 = "323 " + user.getNick() + ": End of /LIST";
+		sendResponse(response1 + response2 + response3, user);
 	}
 }
 
@@ -45,19 +48,14 @@ bool Server::alreadyInUse(string mode, string name)
 
 void	Server::nick(User &user, Command c)
 {
-
 	if (c.getArgs().size() != 1)
 		sendResponse("461", "NICK :Not enough parameters", user);
 	else if (contains(c.getArgs()[0], ":/\0"))
 		sendResponse("432", c.getArgs()[0] + " :Erroneus nickname", user);
 	else if (alreadyInUse("nick", c.getArgs()[0]))
-	{	
-		std::cout << "IN IN USE" << std::endl;
 		sendResponse("433", c.getArgs()[0] + " :Nickname is already in use", user);
-	}
 	else
 	{
-		std::cout << "here?" << std::endl;
 		string oldNickname(user.getNick());
 
 		user.setNick(c.getArgs()[0]);

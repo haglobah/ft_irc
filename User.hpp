@@ -31,6 +31,8 @@ class User
 		void		setNick(std::string);
 		std::string	getBuffer() const;
 
+		std::string	getHostmask() const;
+
 		bool		isDisconnected() const;
 		void		setDisconnected();
 

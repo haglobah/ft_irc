@@ -66,9 +66,9 @@ void	Server::executeCommand(User &u, Command c)
 	if 		(cmd == "PASS") { pass(u, c); }
 	else if (cmd == "CAP") { cap(u, c); }
 	else if (cmd == "PING") { ping(u, c); }
+	else if (!u.isRegistered())	{ sendResponse("462", "You need to register first!", u); }
 	else if (cmd == "NICK") { nick(u, c); }
 	else if (cmd == "USER") { user(u, c); }
-	else if (!u.isRegistered())	{ sendResponse("", "You need to register first!", u); }
 	else if (cmd == "OPER") { oper(u, c); }
 	else if (cmd == "QUIT") { quit(u, c); }
 
@@ -85,8 +85,8 @@ void	Server::executeCommand(User &u, Command c)
 	// USER
 	else if (cmd == "PRIVMSG") { privmsg(u, c); }
 	else if (cmd == "NOTICE") { notice(u, c); }
-	// else if (cmd == "WHO") { who(u, c); }
-	else {}
+	else if (cmd == "WHO") { who(u, c); }
+	else { sendResponse("421", cmd + " :" + cmd, u); }
 }
 
 void	Server::processCommands(string buf, int fd)
