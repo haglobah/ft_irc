@@ -203,7 +203,7 @@ void	Server::part(User &user, Command c)
 	chan_keys = parseChannels(user, c.getArgs()[0]);
 	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 	{
-		string prefix = ":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1);
+		string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
 		if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
 			sendToChannel(prefix + " PART :" + user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1] + "\r\n", *getChannel(it->first), user);
 		else
@@ -330,24 +330,18 @@ string	Server::getUserModes(void)
 
 void	Server::applyUserModes(User &user, Command c)
 {
-	string modesUsed = "";
 	string modestring = c.getArgs()[1];
 	vector<string> v(0);
 	
-	// int argc = 0;
-	// for (vector<string>::iterator it = c.getArgs().begin() + 2; it != c.getArgs().end(); it++)
-	// {
-	// 	v.push_back(*it);
-	// 	argc++;
-	// }
 	if (modestring == "+o")
 	{
 		user.setOper(true);
-		sendResponseRaw(" :", user);
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "+o", user);
 	}
 	else if (modestring == "-o")
 	{
 		user.setOper(false);
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "-o", user);
 	}
 	else
 	{

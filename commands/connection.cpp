@@ -69,17 +69,20 @@ void	Server::nick(User &user, Command c)
 	}
 }
 
-string	Server::getChannelNames()
+string	Server::getChannelNames(User user)
 {
 	string channels;
 
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
-		channels += it->_name;
-		if (it != _channels.end())
-			channels += " ";
+		std::stringstream userCount;
+		userCount << it->_userCount;
+		string userStr = userCount.str();
+		if (it->_topic.empty())
+			channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :No topic is set\r\n";
+		else
+			channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :" + it->_topic + "\r\n";
 	}
-	std::cout << "Available channels: " << channels << std::endl;
 	return (channels);
 }
 
@@ -94,7 +97,8 @@ void	Server::user(User &user, Command c)
 		user.setName(c.getArgs()[0]);
 		user.setFull(c.getArgs()[3]);
 		sendResponse("001", user.getNick() + " Welcome to the " + hostname + " Network!" , user);
-		sendResponse("321", user.getNick() + " Channel: Users Name " + getChannelNames(), user);
+		sendResponse("321", user.getNick() + " Channel: Users Name ", user);
+		sendResponseRaw(getChannelNames(user), user);
 		sendResponse("323", user.getNick() + " End of /LIST" , user);
 	}
 }

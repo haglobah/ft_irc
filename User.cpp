@@ -21,6 +21,8 @@ std::string	User::getHostmask() const {return (this->_hostmask);}
 bool	User::isDisconnected() const {return (_isDisconnected);}
 void	User::setDisconnected() {_isDisconnected = true;}
 
+void	User::setOper(bool isOper) {_isOper = isOper;}
+
 bool	User::getAllowConnection() const {return (_allowConnection);}
 
 bool	User::isRegistered() {return (_isRegistered);}

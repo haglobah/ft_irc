@@ -7,7 +7,7 @@ enum cmds {
 class Command
 {
 	private:
-		std::string				_name;
+		std::string					_name;
 		std::vector<std::string>	_args;
 
 	public:

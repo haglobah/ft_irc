@@ -40,10 +40,11 @@ class Server
 		// SEND
 		void	sendResponse(string code, string msg, User &user);
 		void 	sendResponse(string message, User& user);
-		void 	sendResponseJoin(string message, User& user);
+		void 	sendResponseRaw(string message, User& user);
 		void	sendToChannel(string message, Channel c, User user);
 
 		// COMMANDS
+		// REMINDER: Shouldn't _Command c_ be _Command &c_ ? 
 		void	pass(User &user, Command c);
 		void	nick(User &user, Command c);
 		void	user(User &user, Command c);
@@ -58,6 +59,11 @@ class Server
 		void	list(User &user, Command c);
 		void	kick(User &user, Command c);
 
+		void	applyUserModes(User &user, Command c);
+		string	getUserModes(void);
+		string	getChannelModes(void);
+		void	userMode(string target, User &user, Command c);
+		void	channelMode(string target, User &user, Command c);
 		void	mode(User &user, Command c);
 
 		void	privmsg(User &user, Command c);
@@ -73,12 +79,12 @@ class Server
 		void	joinChannel(map<string, string>::iterator chan_keys, User &user);
 		bool	notInChannelNames(string channel);
 		bool	inChannelNames(string channel);
-		string	getChannelNames();
 
 		vector<Channel>::iterator	getChannel(string name);
 		User&	getUser(string name);
 		bool	isUserIn(User &u, string name);
 		bool	isUserRegistered(string name);
+		string	getChannelNames(User user);
 		vector<string>	parseChannelPRIVMSG(User &u, string channelStr);
 		
 	private:

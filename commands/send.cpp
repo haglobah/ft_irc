@@ -32,7 +32,7 @@ void	Server::sendResponse(string message, User& user)
 		disconnectUser(user);
 }
 
-void	Server::sendResponseJoin(string message, User& user)
+void	Server::sendResponseRaw(string message, User& user)
 {
 	std::cout << "Response to send is: " << message << std::endl;
 	if (send(user.getFD(), message.c_str(), message.length(), 0) == -1)
@@ -71,7 +71,7 @@ void	Server::privmsg(User &user, Command c)
 		{
 			User&	receiver = getUser(target);
 			string sender = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
-			sendResponseJoin(sender + " PRIVMSG " + receiver.getNick() + " :" + c.getArgs()[1] + "\r\n", receiver);
+			sendResponseRaw(sender + " PRIVMSG " + receiver.getNick() + " :" + c.getArgs()[1] + "\r\n", receiver);
 		}
 		else if (inChannelNames(target))
 		{
