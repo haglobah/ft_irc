@@ -14,7 +14,7 @@ Channel::~Channel(){}
 void	Channel::addUser(User const *uptr)
 {
 	showUsers();
-	std::cout << "Adding a user: " << std::endl;
+	// std::cout << "Adding a user: " << std::endl;
 	_users.insert(std::pair<User const *, Privileges>(uptr, VOICE_PRIO));
 	_userCount++;
 	showUsers();
@@ -31,7 +31,6 @@ void	Channel::removeUser(User const *uptr)
 
 void	Channel::showUsers()
 {
-	std::cout << this->_userCount << " Users in Channel '" << this->_name << "':" << std::endl;
 	for (std::map<const User *, Privileges>::iterator it = _users.begin(); it != _users.end(); it++)
 	{
 		std::cout << "User: '" << it->first->getName() << "'" << std::endl;

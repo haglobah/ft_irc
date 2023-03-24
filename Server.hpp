@@ -73,6 +73,7 @@ class Server
 		void	joinChannel(map<string, string>::iterator chan_keys, User &user);
 		bool	notInChannelNames(string channel);
 		bool	inChannelNames(string channel);
+		string	getChannelNames();
 
 		vector<Channel>::iterator	getChannel(string name);
 		User&	getUser(string name);
@@ -99,3 +100,5 @@ bool contains(string &haystack, string const &needles);
 void to_upper(string& str);
 void printsvec(vector<string> strs);
 vector<string>	split(string str, char delim);
+
+string	getUsersIn();

@@ -87,7 +87,7 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 		response = ":ft_irc.de 332 " + user.getNick() + " " + channelName + " :" + chan_it->_topic + "\r\n";
 	string response1 = ":ft_irc.de 353 " + user.getNick() + " = " + channelName + " :@" + getUsersIn(chan_it) + "\r\n";
 	string response2 = ":ft_irc.de 366 " + user.getNick() + " " + channelName + " :End of /NAMES list\r\n";
-	string response3 = ":ft_irc.de 321 " + user.getNick() + " Channel :Users Name\r\n";
+	string response3 = ":ft_irc.de 321 " + user.getNick() + " Channel :Users Name " + getChannelNames() +  "\r\n";
 	string response4;
 	if (chan_it->_topic.empty())
 		response4 = ":ft_irc.de 322 " + user.getNick() + " " + channelName + " :No topic is set\r\n";

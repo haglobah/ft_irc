@@ -70,8 +70,8 @@ void	Server::privmsg(User &user, Command c)
 		if (isUserRegistered(target))
 		{
 			User&	receiver = getUser(target);
-			string sender = ":" + user.getNick() + "!" + user.getName();
-			sendResponse(sender + " PRIVMSG " + receiver.getNick() + " :" + c.getArgs()[1], receiver);
+			string sender = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
+			sendResponseJoin(sender + " PRIVMSG " + receiver.getNick() + " :" + c.getArgs()[1] + "\r\n", receiver);
 		}
 		else if (inChannelNames(target))
 		{
@@ -80,7 +80,7 @@ void	Server::privmsg(User &user, Command c)
 				sendResponse("404", user.getNick() + " :Cannot send to channel", user);
 			else
 			{
-				string sender = ":" + user.getNick() + "!" + user.getName();
+				string sender = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
 				sendToChannel(sender + " PRIVMSG " + channel._name + " :" + c.getArgs()[1] + "\r\n", channel, user);
 			}
 		}
