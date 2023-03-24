@@ -5,25 +5,31 @@ using std::vector;
 using std::map;
 
 namespace {
-	const string client = "ft_irc.de";
+	const string hostname = "ft_irc.de";
+}
+
+string parsePassword(string password)
+{
+	string ret;
+
+	if (password.front() == ':')
+		password = password.substr(1);
+	return (password);
 }
 
 void	Server::pass(User &user, Command c)
 {
+	string password;
+
 	if (c.getArgs().size() != 1)
 		sendResponse("461", "PASS :Not enough parameters", user);
 	else if (user.isRegistered())
 		sendResponse("462", " :You may not reregister", user);
-	else if (c.getArgs()[0] != _password)
+	password = parsePassword(c.getArgs()[0]);
+	if (password != _password)
 		sendResponse("464", " :Password incorrect", user);
 	else
-	{
 		user.registrate();
-		string	response1 = "001 " + user.getNick() + " :Welcome to the " + client + " Network!\r\n";
-		string	response2 = "321 " + user.getNick() + "Channel :Users Name\r\n";
-		string	response3 = "323 " + user.getNick() + ": End of /LIST";
-		sendResponse(response1 + response2 + response3, user);
-	}
 }
 
 bool Server::alreadyInUse(string mode, string name)
@@ -59,7 +65,7 @@ void	Server::nick(User &user, Command c)
 		string oldNickname(user.getNick());
 
 		user.setNick(c.getArgs()[0]);
-		sendResponse(oldNickname + " changed his nickname to " + user.getNick(), user);
+		sendResponse("NICK :" + oldNickname + " changed his nickname to " + user.getNick(), user);
 	}
 }
 
@@ -73,7 +79,7 @@ void	Server::user(User &user, Command c)
 	{
 		user.setName(c.getArgs()[0]);
 		user.setFull(c.getArgs()[3]);
-		sendResponse("001", "User gets registered with username '" + user.getName() + "' and real name \"" + user.getFull() + "\"", user);
+		sendResponse("001", user.getNick() + " Welcome to the " + hostname + " Network!" , user);
 	}
 }
 
@@ -82,13 +88,13 @@ void	Server::ping(User &user, Command c)
 	if (c.getArgs().size() < 1)
 		sendResponse("461", "PING :Not enough parameters", user);
 	else if (c.getArgs().size() == 1)
-		sendResponse("PONG message from " + client + " to " + c.getArgs()[0] , user);
+		sendResponse("PONG :message from " + hostname + " to " + c.getArgs()[0] , user);
 	else
 	{
 		string args;
 		for (unsigned int i = 0; i < c.getArgs().size(); i++)
 			args += c.getArgs()[i] + " ";
-		sendResponse("PONG message from " + client + " " + args, user);
+		sendResponse("PONG :message from " + hostname + " " + args, user);
 	}
 }
 
@@ -103,15 +109,15 @@ void	Server::quit(User &user, Command c)
 	// REMINDER: message needs to get send to channel
 	if (c.getArgs().size() == 0)
 	{
-		removeUser(user);
-		sendResponse("Quit: ", user);
+		disconnectUser(user);
+		sendResponse("QUIT: ", user);
 	}
 	else
 	{
 		string response;
 		for (unsigned int i = 0; i < c.getArgs().size(); i++)
 			response.append(c.getArgs()[i] + " ");
-		removeUser(user);
-		sendResponse("Quit: " + response, user);
+		disconnectUser(user);
+		sendResponse("QUIT: " + response, user);
 	}
 }

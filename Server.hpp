@@ -33,15 +33,15 @@ class Server
 		void	processCommands(string, int);
 		void	receiveInput(int);
 		void	acceptUser();
-		void	removeUser(User &u);
+		void	disconnectUser(User &u);
 
 		void	run(void);
 
 		// SEND
-		void	sendResponse(string, string, User &);
+		void	sendResponse(string code, string msg, User &user);
 		void 	sendResponse(string message, User& user);
-		void	sendResponseJoin(string message, User& user);
-		void	sendToChannel(string message, Channel c);
+		void 	sendResponseJoin(string message, User& user);
+		void	sendToChannel(string message, Channel c, User user);
 
 		// COMMANDS
 		void	pass(User &user, Command c);
@@ -81,14 +81,14 @@ class Server
 		vector<string>	parseChannelPRIVMSG(User &u, string channelStr);
 		
 	private:
-		int 					_port;
-		string				_password;
-		pollfd					_userPoll[SOMAXCONN];
-		nfds_t 					_activeUsers;
-		int			_activePoll;
-		bool					_stop;
-		int 					_listeningSocket;
-		map<int, User>		_users;
+		int 			_port;
+		string			_password;
+		pollfd			_userPoll[SOMAXCONN];
+		nfds_t 			_activeUsers;
+		int				_activePoll;
+		bool			_stop;
+		int 			_listeningSocket;
+		map<int, User>	_users;
 		vector<Channel>	_channels;
 
 		void loop();

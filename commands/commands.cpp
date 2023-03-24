@@ -5,7 +5,7 @@ using std::vector;
 using std::map;
 
 namespace {
-	const string client = ":ft_irc.de ";
+	const string hostname = ":ft_irc.de ";
 }
 
 map<string, string> Server::parseChannels(User &u, string channelStr)
@@ -46,7 +46,7 @@ map<string, string> Server::parseChannels(User &u, string channelStr, string key
 	if (getline(keyStream, k, ','))
 	{
 		chan_keys.clear();
-		sendResponse("Not the same amount of channel names and keys", u);
+		sendResponse("JOIN :Not the same amount of channel names and keys", u);
 	}
 	while (getline(chanStream, c, ','))
 	{
@@ -79,13 +79,13 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 	string	userName = user.getName();
 	chan_it->addUser(&user);
 	// sendToChannel(userName + "@localhost JOIN :" + channelName, *chan_it);
-	string start = ":" + user.getNick() + "!" + user.getName() + "@" + user.getHostmask() + " JOIN :" + channelName + "\r\n"; 
+	string start = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " JOIN :" + channelName + "\r\n"; 
 	string response;
 	if (chan_it->_topic.empty())
 		response = ":ft_irc.de 332 " + user.getNick() + " " + channelName + " :No topic is set\r\n";
 	else
 		response = ":ft_irc.de 332 " + user.getNick() + " " + channelName + " :" + chan_it->_topic + "\r\n";
-	string response1 = ":ft_irc.de 353 " + user.getNick() + " = " + channelName + " :@" + channelName + " " + getUsersIn(chan_it) + "\r\n";
+	string response1 = ":ft_irc.de 353 " + user.getNick() + " = " + channelName + " :@" + getUsersIn(chan_it) + "\r\n";
 	string response2 = ":ft_irc.de 366 " + user.getNick() + " " + channelName + " :End of /NAMES list\r\n";
 	string response3 = ":ft_irc.de 321 " + user.getNick() + " Channel :Users Name\r\n";
 	string response4;
@@ -185,14 +185,14 @@ void	Server::topic(User &user, Command c)
 		else if (c.getArgs()[1].empty())
 		{
 			chan._topic.clear();
-			sendToChannel("331 " + c.getArgs()[0] + " :No topic is set", chan);
+			sendToChannel("331 " + c.getArgs()[0] + " :No topic is set", chan, user);
 		}
 		else
 		{
 			chan._topic = c.getArgs()[1];
-			sendToChannel("332" + c.getArgs()[0] + " :" + chan._topic, chan);
+			sendToChannel("332" + c.getArgs()[0] + " :" + chan._topic, chan, user);
 			// REMINDER: add time after getNick
-			sendToChannel("333" + c.getArgs()[0] + " " + user.getNick() + " ", chan);
+			sendToChannel("333" + c.getArgs()[0] + " " + user.getNick() + " ", chan, user);
 		}
 	}
 }
@@ -207,10 +207,10 @@ void	Server::part(User &user, Command c)
 	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 	{
 		if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
-			sendToChannel(user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1], *getChannel(it->first));
+			sendToChannel("PART :" + user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1], *getChannel(it->first), user);
 		else
-			sendToChannel(user.getNick() + " leave channel " + it->first, *getChannel(it->first));
-		getChannel(it->first)->removeUser(user);
+			sendToChannel("PART :" + user.getNick() + " leave channel " + it->first, *getChannel(it->first), user);
+		getChannel(it->first)->removeUser(&user);
 	}
 }
 
@@ -264,7 +264,7 @@ void	Server::kick(User &user, Command c)
 			sendResponse("441", userToKick.getNick() + " " + c.getArgs()[0] + " :They aren't on that channel", user);
 		else
 		{
-			chan.removeUser(userToKick);
+			chan.removeUser(&userToKick);
 			sendResponse(user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + c.getArgs()[0], user);
 		}
 	}
@@ -302,10 +302,10 @@ void Server::who(User &user, Command c)
 	{
 		for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
 		{
-			resp += client + "352 " + user.getNick() + " * " 
-				+ it->second.getName() + " * " + client + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
+			resp += hostname + "352 " + user.getNick() + " * " 
+				+ it->second.getName() + " * " + hostname + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
 		}
-		resp += client + "315 " + user.getNick() + "* :End of /WHO list";
+		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list";
 	}
 	sendResponse(resp, user);
 }

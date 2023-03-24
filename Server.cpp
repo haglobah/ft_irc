@@ -121,7 +121,7 @@ void	Server::receiveInput(int fd)
 		processCommands(buf, fd);
 }
 
-void	Server::removeUser(User &u)
+void	Server::disconnectUser(User &u)
 {
 	u.setDisconnected();
 	removeConnection(u.getFD());
@@ -142,7 +142,7 @@ void	Server::acceptUser()
 	addConnection(clientSocket);
 	_users.insert(pair<int, User>(clientSocket, User(clientSocket, host)));
 	cout << "Accept was successful!" << endl;
-    cout << "Hostmask: " << host << " Client Socket: " << clientSocket << " Client added!" << endl;
+    cout << "Hostmask: " << host << " hostname Socket: " << clientSocket << " hostname added!" << endl;
 }
 
 void Server::loop()

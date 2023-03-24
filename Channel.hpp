@@ -39,7 +39,7 @@ class Channel
 		~Channel();
 
 		void	addUser(User const *uptr);
-		void	removeUser(User &u);
+		void	removeUser(User const *uptr);
 		void	showUsers();
 		
 		void	updatePrivileges(User &u);

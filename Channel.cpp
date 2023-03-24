@@ -14,15 +14,19 @@ Channel::~Channel(){}
 void	Channel::addUser(User const *uptr)
 {
 	showUsers();
-	_userCount++;
+	std::cout << "Adding a user: " << std::endl;
 	_users.insert(std::pair<User const *, Privileges>(uptr, VOICE_PRIO));
+	_userCount++;
 	showUsers();
 }
 
-void	Channel::removeUser(User &u)
+void	Channel::removeUser(User const *uptr)
 {
-	// REMINDER
-	(void)u;
+	showUsers();
+	std::cout << "Removing a user: " << std::endl;
+	_users.erase(uptr);
+	_userCount--;
+	showUsers();
 }
 
 void	Channel::showUsers()
