@@ -11,7 +11,7 @@ void	Server::setupPoll(int fd)
 int		Server::addConnection(int clientSocket)
 {
 	if (_activePoll >= SOMAXCONN)
-		handle_error("ADD TO POLL FAILURE");
+		std::cerr << "ADD TO POLL FAILURE" << std::endl;
 	_userPoll[_activePoll].fd = clientSocket;
 	_userPoll[_activePoll].events = POLLIN; 
 	_activePoll++;
@@ -28,7 +28,7 @@ int		Server::removeConnection(int clientFD)
 			i = j;
 	}
 	if (i == -1)
-		handle_error("NO POLL FOUND");
+		std::cerr << "NO POLL FOUND" << std::endl;
 	_userPoll[i].fd = _userPoll[_activePoll - 1].fd;
 	_userPoll[i].events = POLLIN;
 	_userPoll[_activePoll - 1].fd--;

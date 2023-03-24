@@ -80,7 +80,7 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "KICK") { kick(u, c); }
 
 	// SERVER
-	// else if (cmd == "MODE") { mode(u, c); }
+	else if (cmd == "MODE") { mode(u, c); }
 
 	// USER
 	else if (cmd == "PRIVMSG") { privmsg(u, c); }
@@ -151,12 +151,19 @@ void Server::loop()
 		throw activePollFull();
 	for (int i = 0; i < _activePoll; i++)
 	{
-		if (_userPoll[i].revents & POLLIN)
+		try
 		{
-			if (_userPoll[i].fd == _listeningSocket)
-				acceptUser();
-			else
-				receiveInput(_userPoll[i].fd);
+			if (_userPoll[i].revents & POLLIN)
+			{
+				if (_userPoll[i].fd == _listeningSocket)
+					acceptUser();
+				else
+					receiveInput(_userPoll[i].fd);
+			}
+		}
+		catch (std::exception &e)
+		{
+			cerr << e.what() << endl;
 		}
 	}
 	return ; 

@@ -1,7 +1,9 @@
 #include "Channel.hpp"
 #include <iostream>
 
-Channel::Channel(std::string name)
+using std::string;
+
+Channel::Channel(string name)
 : _name(name), _key(""), _topic(""),  _users(), _modes(), _userCount(0)
 {}
 
@@ -35,6 +37,11 @@ void	Channel::showUsers()
 	{
 		std::cout << "User: '" << it->first->getName() << "'" << std::endl;
 	}
+}
+
+string	getActiveModes(void)
+{
+	;
 }
 
 void	updatePrivileges(User &u)

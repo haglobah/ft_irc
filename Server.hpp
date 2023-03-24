@@ -61,7 +61,7 @@ class Server
 
 		void	applyUserModes(User &user, Command c);
 		string	getUserModes(void);
-		string	getChannelModes(void);
+		string	getChannelModes(string name);
 		void	userMode(string target, User &user, Command c);
 		void	channelMode(string target, User &user, Command c);
 		void	mode(User &user, Command c);

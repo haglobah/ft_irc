@@ -31,7 +31,8 @@ class Channel
 		std::string							_key;
 		std::string							_topic;
 		std::map<const User *, Privileges>	_users;
-		Modes								_modes;
+		// std::vector<int>					_modes;
+		Modes					_modes;
 		int									_userCount;
 
 		Channel();
@@ -41,6 +42,8 @@ class Channel
 		void	addUser(User const *uptr);
 		void	removeUser(User const *uptr);
 		void	showUsers();
+
+		std::string	getActiveModes();
 		
 		void	updatePrivileges(User &u);
 };

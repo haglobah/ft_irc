@@ -10,9 +10,6 @@
 
 typedef int SOCKET;
 
-#define handle_error(msg) \
-        do { perror(msg); return(EXIT_FAILURE); } while (0)
-
 SOCKET	createSocket();
 SOCKET	acceptSocket(SOCKET socket_fd);
 int 	bindSocket(SOCKET socketFD, int port);

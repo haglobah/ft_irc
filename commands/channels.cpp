@@ -174,7 +174,7 @@ void	Server::topic(User &user, Command c)
 	{
 		vector<Channel>::iterator chan_it = getChannel(c.getArgs()[0]);
 		std::map<const User *, Privileges>::iterator it = chan_it->_users.find(&user);
-		if (chan_it->_modes == TOPIC_RESTRICTED && it->second != OPERATOR)
+		if (/*chan_it->_modes == TOPIC_RESTRICTED && */it->second != OPERATOR)
 		{
 			sendResponse("482", c.getArgs()[0] + " :You're not channel operator", user);
 			return ;
@@ -369,9 +369,29 @@ void	Server::userMode(string userNick, User &user, Command c)
 	}
 }
 
-void	Server::channelMode(string target, User &user, Command c)
-{
+// string	Server::getChannelModes(string name)
+// {
+// 	vector<Channel>::iterator it = getChannel(name);
+// 	return (it->getActiveModes());
 
+// }
+
+void	Server::channelMode(string channelName, User &user, Command c)
+{
+	if (notInChannelNames(channelName))
+		sendResponse("403", channelName + " :No such nick/channel", user);
+	else
+	{
+		if (c.getArgs().size() == 1)
+		{
+			// string userModes = getChannelModes(channelName);
+			sendResponse("221", " :These are our modes 'userModes'", user);
+		}
+		else 
+		{
+			applyUserModes(user, c);
+		}
+	}
 }
 
 static bool	isChannelMode(string target)

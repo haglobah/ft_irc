@@ -96,7 +96,7 @@ void	Server::user(User &user, Command c)
 	{
 		user.setName(c.getArgs()[0]);
 		user.setFull(c.getArgs()[3]);
-		sendResponse("001", user.getNick() + " Welcome to the " + hostname + " Network!" , user);
+		sendResponse("001", " Welcome to the " + hostname + " Network " + user.getNick() + "!" , user);
 		sendResponse("321", user.getNick() + " Channel: Users Name ", user);
 		sendResponseRaw(getChannelNames(user), user);
 		sendResponse("323", user.getNick() + " End of /LIST" , user);

@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 SOCKET	createSocket()
 {
