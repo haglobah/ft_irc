@@ -143,6 +143,7 @@ vector<Channel>::iterator Server::getChannel(string name)
 {
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
+		std::cout << "Name in iterator: " << it->_name << "Name to search: " << name << std::endl;
 		if (it->_name == name)
 			return (it);
 	}
@@ -214,15 +215,28 @@ void	Server::part(User &user, Command c)
 
 void	Server::list(User &user, Command c)
 {
-	if (c.getArgs().size() != 1)
+	if (c.getArgs().size() > 1)
 		sendResponse("461", "LIST :Not enough parameters", user);
+	else if (c.getArgs().size() == 0)
+	{
+		for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+		{
+			std::stringstream userCount;
+			userCount << it->_userCount;
+			string userStr = userCount.str();
+			if (it->_topic.empty())
+				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :No topic is set\r\n", user);				
+			else
+				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + it->_topic + "\r\n", user);
+		}
+	}
 	else
 	{
 		map<string, string>		chan_keys;
 		chan_keys = parseChannels(user, c.getArgs()[0]);
 		for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 		{
-			vector<Channel>::iterator chan_It = getChannel(it->first);;
+			vector<Channel>::iterator chan_It = getChannel(it->first);
 			if (chan_It == _channels.end())
 				;
 			else if (chan_It->_topic.empty())

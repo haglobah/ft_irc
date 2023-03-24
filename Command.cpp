@@ -13,8 +13,11 @@ Command::Command(string cmd)
 
 	_name = cmd.substr(0, cmd.find(' '));
 	to_upper(_name);
+	if (cmd.find(' ') == std::string::npos)
+		return ;
 	cmd.erase(0, cmd.find(' ') + 1);
 
+	std::cout << "CMD IN PARSER: " << cmd << std::endl;
 	std::istringstream cmd_istr(cmd);
     while (getline(cmd_istr, s, ' '))
 	{
