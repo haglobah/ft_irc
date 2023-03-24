@@ -8,71 +8,6 @@ namespace {
 	const string hostname = ":ft_irc.de ";
 }
 
-map<string, string> Server::parseChannels(User &u, string channelStr)
-{
-	map<string, string>		channels;
-	string					c;
-
-	std::istringstream chanStream(channelStr);
-    while (getline(chanStream, c, ','))
-	{
-		if (!isChannelValid(c))
-		{
-			channels.clear();
-			sendResponse("403", c + " :No such channel found", u);
-		}
-        channels.insert(std::pair<string, string>(c, ""));
-	}
-	return (channels);
-}
-
-map<string, string> Server::parseChannels(User &u, string channelStr, string keyStr)
-{
-	map<string, string>		chan_keys;
-	string					c;
-	string					k;
-
-	std::istringstream chanStream(channelStr);
-	std::istringstream keyStream(keyStr);
-    while (getline(chanStream, c, ',') && getline(keyStream, k, ','))
-	{
-		if (!isChannelValid(c) || notInChannelNames(c))
-		{
-			chan_keys.clear();
-			sendResponse("403", c + " :No such channel found", u);
-		}
-        chan_keys.insert(std::pair<string, string>(c, k));
-	}
-	if (getline(keyStream, k, ','))
-	{
-		chan_keys.clear();
-		sendResponse("JOIN :Not the same amount of channel names and keys", u);
-	}
-	while (getline(chanStream, c, ','))
-	{
-		if (!isChannelValid(c))
-		{
-			chan_keys.clear();
-			sendResponse("403", c + " :No such channel found", u);
-		}
-        chan_keys.insert(std::pair<string, string>(c, ""));
-	}
-	return (chan_keys);
-}
-
-string	getUsersIn(vector<Channel>::iterator chan_it)
-{
-	string	usersInChannel;
-
-	for (map<const User *, Privileges>::iterator it = chan_it->_users.begin(); it != chan_it->_users.end(); it++)
-	{
-		usersInChannel += it->first->getNick();
-		if (it != chan_it->_users.end())
-			usersInChannel += " ";
-	}
-	return (usersInChannel);
-}
-
 void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 {
 	string	channelName = chan_it->_name;
@@ -89,7 +24,6 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 	string response4 = getChannelNames(user);
 	string response5 = hostname + "323 " + user.getNick() + " :End of /LIST";
 	sendResponseRaw(start + response + response1 + response2 + response3 + response4 + response5, user);
-	// chan_it->showUsers();
 }
 
 void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
@@ -137,17 +71,6 @@ void	Server::join(User &user, Command c)
 			joinChannel(it, user);
 		}
 	}
-}
-
-vector<Channel>::iterator Server::getChannel(string name)
-{
-	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	{
-		std::cout << "Name in iterator: " << it->_name << "Name to search: " << name << std::endl;
-		if (it->_name == name)
-			return (it);
-	}
-	return (_channels.end());
 }
 
 void	Server::topic(User &user, Command c)
@@ -256,16 +179,6 @@ void	Server::list(User &user, Command c)
 		}
 		sendResponse("323", " :End of /LIST", user);
 	}
-}
-
-User& Server::getUser(string name)
-{
-	for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
-	{
-		if (it->second.getNick() == name)
-			return (it->second);
-	}
-	return (_users.end()->second);	
 }
 
 void	Server::kick(User &user, Command c)
