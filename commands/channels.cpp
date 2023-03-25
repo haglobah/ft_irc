@@ -12,18 +12,15 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 {
 	string	channelName = chan_it->_name;
 	chan_it->addUser(&user);
-	string start = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " JOIN :" + channelName + "\r\n"; 
+	string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " JOIN :" + channelName + "\r\n"; 
 	string response;
 	if (chan_it->_topic.empty())
 		response = hostname + "332 " + user.getNick() + " " + channelName + " :No topic is set\r\n";
 	else
 		response = hostname + "332 " + user.getNick() + " " + channelName + " :" + chan_it->_topic + "\r\n";
-	string response1 = hostname + "353 " + user.getNick() + " = " + channelName + " :@" + getUsersIn(chan_it) + "\r\n";
-	string response2 = hostname + "366 " + user.getNick() + " " + channelName + " :End of /NAMES list\r\n";
-	string response3 = hostname + "321 " + user.getNick() + " Channel :Users Name \r\n";
-	string response4 = getChannelNames(user);
-	string response5 = hostname + "323 " + user.getNick() + " :End of /LIST";
-	sendResponseRaw(start + response + response1 + response2 + response3 + response4 + response5, user);
+	string RPL_namelist = getRPL_namelist(chan_it, user);
+	string RPL_list = getRPL_list(user);
+	sendResponseRaw(prefix + response + RPL_namelist + RPL_list, user);
 }
 
 void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
@@ -142,19 +139,11 @@ void	Server::list(User &user, Command c)
 		sendResponse("461", "LIST :Not enough parameters", user);
 	else if (c.getArgs().size() == 0)
 	{
-		for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-		{
-			std::stringstream userCount;
-			userCount << it->_userCount;
-			string userStr = userCount.str();
-			if (it->_topic.empty())
-				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :No topic is set\r\n", user);				
-			else
-				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + it->_topic + "\r\n", user);
-		}
+		sendResponseRaw(getRPL_list(user), user);
 	}
 	else
 	{
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " 321 " + user.getNick() + " Channel: Users Name\r\n", user);
 		map<string, string>		chan_keys;
 		chan_keys = parseChannels(user, c.getArgs()[0]);
 		for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
@@ -177,7 +166,7 @@ void	Server::list(User &user, Command c)
 				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + chan_It->_name + " " + userStr + chan_It->_topic + "\r\n", user);
 			}
 		}
-		sendResponse("323", " :End of /LIST", user);
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " 323 " + user.getNick() + " End of /LIST\r\n", user);
 	}
 }
 

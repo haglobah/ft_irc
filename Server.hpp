@@ -61,11 +61,12 @@ class Server
 
 		void	applyUserModes(User &user, Command c);
 		string	getUserModes(void);
-		string	getUsersIn(vector<Channel>::iterator chan_it);
 		string	getChannelModes(string name);
 		void	userMode(string target, User &user, Command c);
 		void	channelMode(string target, User &user, Command c);
 		void	mode(User &user, Command c);
+		string	getRPL_list(User &u);
+		string	getRPL_namelist(std::vector<Channel>::iterator chan_it, User &u);
 
 		void	privmsg(User &user, Command c);
 		void	notice(User &user, Command c);
@@ -76,6 +77,7 @@ class Server
 		map<string, string>	parseChannels(User &u, string channelStr, string keyStr);
 		vector<string> parseUsers(string);
 
+		string	getUsersIn(vector<Channel>::iterator chan_it);
 		void	addUser(vector<Channel>::iterator it, User &user);
 		void	joinChannel(map<string, string>::iterator chan_keys, User &user);
 		bool	notInChannelNames(string channel);
@@ -107,5 +109,3 @@ bool contains(string &haystack, string const &needles);
 void to_upper(string& str);
 void printsvec(vector<string> strs);
 vector<string>	split(string str, char delim);
-
-string	getUsersIn();

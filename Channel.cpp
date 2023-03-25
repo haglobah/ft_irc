@@ -41,7 +41,7 @@ void	Channel::showUsers()
 
 string	getActiveModes(void)
 {
-	;
+	return ("Test");
 }
 
 void	updatePrivileges(User &u)

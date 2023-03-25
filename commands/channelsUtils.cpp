@@ -1,5 +1,9 @@
 #include "../Server.hpp"
 
+using std::string;
+using std::vector;
+using std::map;
+
 map<string, string> Server::parseChannels(User &u, string channelStr)
 {
 	map<string, string>		channels;
@@ -52,7 +56,7 @@ map<string, string> Server::parseChannels(User &u, string channelStr, string key
 	return (chan_keys);
 }
 
-string	getUsersIn(vector<Channel>::iterator chan_it)
+string	Server::getUsersIn(vector<Channel>::iterator chan_it)
 {
 	string	usersInChannel;
 
