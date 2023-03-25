@@ -67,6 +67,7 @@ class Server
 		void	channelMode(string target, User &user, Command c);
 		void	mode(User &user, Command c);
 		string	getRPL_list(User &u);
+		string	getRPL_listUser(User &u);
 		string	getRPL_namelist(std::vector<Channel>::iterator chan_it, User &u);
 
 		void	privmsg(User &user, Command c);
@@ -89,6 +90,7 @@ class Server
 		bool	isUserIn(User &u, string name);
 		bool	isUserRegistered(string name);
 		string	getChannelNames(User user);
+		string	getChannelNamesUser(User user);
 		vector<string>	parseChannelPRIVMSG(User &u, string channelStr);
 		
 	private:

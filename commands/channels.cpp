@@ -125,11 +125,21 @@ void	Server::part(User &user, Command c)
 	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 	{
 		string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
-		if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
-			sendToChannel(prefix + " PART :" + user.getNick() + " leave channel " + it->first + " because " + c.getArgs()[1] + "\r\n", *getChannel(it->first), user);
-		else
-			sendToChannel(prefix + "PART :" + user.getNick() + " leave channel " + it->first + "\r\n", *getChannel(it->first), user);
-		getChannel(it->first)->removeUser(&user);
+		if (!isUserIn(user, it->first))
+			sendResponse("442", it->first + " :You're not on that channel", user);
+		else if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
+		{
+			getChannel(it->first)->removeUser(&user);
+			sendResponseRaw(prefix + "PART " + it->first + "\r\n", user);
+			sendToChannel(prefix + "PART " + it->first + "\r\n", *getChannel(it->first), user);
+			sendResponseRaw(getRPL_listUser(user), user);
+		}
+		else 
+		{
+			getChannel(it->first)->removeUser(&user);
+			sendToChannel(prefix + "PART " + it->first + " :" + c.getArgs()[1] + "\r\n", *getChannel(it->first), user);
+			sendResponseRaw(getRPL_listUser(user), user);
+		}
 	}
 }
 

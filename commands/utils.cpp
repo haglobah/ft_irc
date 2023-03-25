@@ -63,6 +63,16 @@ std::string	Server::getRPL_list(User &u)
 	return (RPL_list);
 }
 
+std::string	Server::getRPL_listUser(User &u)
+{
+	std::string RPL_list;
+
+	RPL_list = ":" + u.getNick() + "@" + u.getName() + "!" + hostname.substr(1) + " 321 " + u.getNick() + " Channel: Users Name\r\n";
+	RPL_list += getChannelNamesUser(u);
+	RPL_list += ":" + u.getNick() + "@" + u.getName() + "!" + hostname.substr(1) + " 323 " + u.getNick() + " End of /LIST\r\n";
+	return (RPL_list);
+}
+
 std::string	Server::getRPL_namelist(std::vector<Channel>::iterator chan_it, User &u)
 {
 	std::string RPL_namelist;
