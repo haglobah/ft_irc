@@ -205,7 +205,7 @@ void	Server::kick(User &user, Command c)
 		else
 		{
 			chan.removeUser(&userToKick);
-			sendResponse("KICK :" + user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + c.getArgs()[0], user);
+			sendResponse("KICK " + user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + c.getArgs()[0], user);
 		}
 	}
 	
