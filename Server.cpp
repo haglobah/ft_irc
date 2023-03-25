@@ -6,6 +6,10 @@ using std::cerr;
 using std::endl;
 using std::pair;
 
+namespace {
+	const string hostname = "ft_irc.de";
+}
+
 bool invalid(long port)
 {
 	return (port <= 0 || port > 65535 || errno == ERANGE);
@@ -70,7 +74,7 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "NICK") { nick(u, c); } // WORKS
 	else if (cmd == "USER") { user(u, c); } // WORKS
 	else if (cmd == "OPER") { oper(u, c); } // WORKS
-	else if (cmd == "QUIT") { quit(u, c); } // KINDA WORKS
+	else if (cmd == "QUIT") { quit(u, c); } // WORKS
 
 	// CHANNEL
 	else if (cmd == "JOIN") { join(u, c); } // WORKS
@@ -127,7 +131,12 @@ void	Server::disconnectUser(User &u)
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
 		if (isUserIn(u, it->_name))
+		{
 			it->removeUser(&u);
+			sendToChannel(":" + u.getNick() + "!" + u.getName() + "@" + hostname.substr(1) + " QUIT " + it->_name + "\r\n", *it, u);
+			sendToChannel(getRPL_list(u), *it, u);
+			sendResponse(getRPL_list(u), u);
+		}
 		if (it->_userCount == 0)
 			removeChannel(it);
 	}

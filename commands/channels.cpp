@@ -134,12 +134,14 @@ void	Server::part(User &user, Command c)
 			sendResponseRaw(prefix + "PART " + it->first + "\r\n", user);
 			sendToChannel(prefix + "PART " + it->first + "\r\n", *getChannel(it->first), user);
 			sendResponseRaw(getRPL_listUser(user), user);
+			sendToChannel(getRPL_list(user), *getChannel(it->first), user);
 		}
 		else 
 		{
 			getChannel(it->first)->removeUser(&user);
 			sendToChannel(prefix + "PART " + it->first + " :" + c.getArgs()[1] + "\r\n", *getChannel(it->first), user);
 			sendResponseRaw(getRPL_listUser(user), user);
+			sendToChannel(getRPL_list(user), *getChannel(it->first), user);
 		}
 	}
 }
