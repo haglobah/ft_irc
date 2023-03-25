@@ -59,6 +59,7 @@ class Server
 		void	list(User &user, Command c);
 		void	kick(User &user, Command c);
 
+		void	removeChannel(vector<Channel>::iterator);
 		void	applyUserModes(User &user, Command c);
 		string	getUserModes(void);
 		string	getChannelModes(string name);

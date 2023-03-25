@@ -69,23 +69,6 @@ void	Server::nick(User &user, Command c)
 	}
 }
 
-string	Server::getChannelNames(User user)
-{
-	string channels;
-
-	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	{
-		std::stringstream userCount;
-		userCount << it->_userCount;
-		string userStr = userCount.str();
-		if (it->_topic.empty())
-			channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :No topic is set\r\n";
-		else
-			channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :" + it->_topic + "\r\n";
-	}
-	return (channels);
-}
-
 void	Server::user(User &user, Command c)
 {
 	if (c.getArgs().size() != 4 || c.getArgs()[0].empty())
@@ -128,7 +111,8 @@ void	Server::quit(User &user, Command c)
 	if (c.getArgs().size() == 0)
 	{
 		disconnectUser(user);
-		sendResponse("QUIT: ", user);
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " QUIT\r\n", user);
+		sendResponseRaw(getRPL_list(user), user);
 	}
 	else
 	{
@@ -136,6 +120,7 @@ void	Server::quit(User &user, Command c)
 		for (unsigned int i = 0; i < c.getArgs().size(); i++)
 			response.append(c.getArgs()[i] + " ");
 		disconnectUser(user);
-		sendResponse("QUIT: " + response, user);
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " QUIT + :" + response + "\r\n", user);
+		sendResponseRaw(getRPL_list(user), user);
 	}
 }

@@ -124,6 +124,13 @@ void	Server::receiveInput(int fd)
 void	Server::disconnectUser(User &u)
 {
 	u.setDisconnected();
+	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	{
+		if (isUserIn(u, it->_name))
+			it->removeUser(&u);
+		if (it->_userCount == 0)
+			removeChannel(it);
+	}
 	removeConnection(u.getFD());
 	_users.erase(u.getFD());
 }

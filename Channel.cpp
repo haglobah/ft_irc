@@ -25,7 +25,7 @@ void	Channel::addUser(User const *uptr)
 void	Channel::removeUser(User const *uptr)
 {
 	showUsers();
-	std::cout << "Removing a user: " << std::endl;
+	std::cout << "Removing a user: " << uptr->getNick() << std::endl;
 	_users.erase(uptr);
 	_userCount--;
 	showUsers();

@@ -37,8 +37,6 @@ void	Server::sendResponseRaw(string message, User& user)
 	std::cout << "Response to send is: " << message << std::endl;
 	if (send(user.getFD(), message.c_str(), message.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
-	if (user.isDisconnected())
-		disconnectUser(user);
 }
 
 void	Server::sendToChannel(string message, Channel c, User user)
@@ -120,4 +118,5 @@ void	Server::notice(User &user, Command c)
 		else 
 		{}
 	}
+
 }
