@@ -21,7 +21,7 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 	string RPL_namelist = getRPL_namelist(chan_it, user);
 	string RPL_list = getRPL_list(user);
 	sendResponseRaw(prefix + response + RPL_namelist + RPL_list, user);
-	sendToChannel(prefix + response + RPL_namelist + RPL_list, *chan_it ,user);
+	sendToChannel(prefix + RPL_list, *chan_it ,user);
 }
 
 void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)

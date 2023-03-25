@@ -31,7 +31,7 @@ int		Server::removeConnection(int clientFD)
 		std::cerr << "NO POLL FOUND" << std::endl;
 	_userPoll[i].fd = _userPoll[_activePoll - 1].fd;
 	_userPoll[i].events = POLLIN;
-	_userPoll[_activePoll - 1].fd--;
+	_userPoll[_activePoll - 1].fd = -1;
 	_activePoll--;
 	return (0);
 }

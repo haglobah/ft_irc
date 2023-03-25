@@ -73,7 +73,7 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "QUIT") { quit(u, c); } // KINDA WORKS
 
 	// CHANNEL
-	else if (cmd == "JOIN") { join(u, c); } // KINDA WORKS
+	else if (cmd == "JOIN") { join(u, c); } // WORKS
 	else if (cmd == "PART") { part(u, c); } // WORKS
 	else if (cmd == "TOPIC") { topic(u, c); } // KINDA WORKS
 	else if (cmd == "LIST") { list(u, c); } // WORKS
@@ -133,6 +133,7 @@ void	Server::disconnectUser(User &u)
 	}
 	removeConnection(u.getFD());
 	_users.erase(u.getFD());
+	close(u.getFD());
 }
 
 void	Server::acceptUser()

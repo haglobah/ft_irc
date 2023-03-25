@@ -110,8 +110,8 @@ void	Server::quit(User &user, Command c)
 	// REMINDER: message needs to get send to channel
 	if (c.getArgs().size() == 0)
 	{
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " QUIT\r\n", user);
 		sendResponseRaw(getRPL_list(user), user);
+		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " QUIT\r\n", user);
 		disconnectUser(user);
 	}
 	else
@@ -119,8 +119,8 @@ void	Server::quit(User &user, Command c)
 		string response;
 		for (unsigned int i = 0; i < c.getArgs().size(); i++)
 			response.append(c.getArgs()[i] + " ");
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " QUIT " + response + "\r\n", user);
 		sendResponseRaw(getRPL_list(user), user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + " QUIT " + response + "\r\n", user);
 		disconnectUser(user);
 	}
 }
