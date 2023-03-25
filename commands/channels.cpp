@@ -12,7 +12,7 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 {
 	string	channelName = chan_it->_name;
 	chan_it->addUser(&user);
-	string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " JOIN :" + channelName + "\r\n"; 
+	string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + "JOIN :" + channelName + "\r\n"; 
 	string response;
 	if (chan_it->_topic.empty())
 		response = hostname + "332 " + user.getNick() + " " + channelName + " :No topic is set\r\n";
@@ -21,6 +21,7 @@ void	Server::addUser(std::vector<Channel>::iterator chan_it, User &user)
 	string RPL_namelist = getRPL_namelist(chan_it, user);
 	string RPL_list = getRPL_list(user);
 	sendResponseRaw(prefix + response + RPL_namelist + RPL_list, user);
+	sendToChannel(prefix + response + RPL_namelist + RPL_list, *chan_it ,user);
 }
 
 void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
