@@ -83,12 +83,12 @@ void	Server::executeCommand(User &u, Command& c)
 	else if (cmd == "KICK") { kick(u, c); }  // DOESNT WORK -> maybe just remove
 
 	// SERVER
-	else if (cmd == "MODE") { mode(u, c); }
+	else if (cmd == "MODE") { mode(u, c); } 
 
 	// USER
 	else if (cmd == "PRIVMSG") { privmsg(u, c); } //WORKS
-	else if (cmd == "NOTICE") { notice(u, c); }
-	else if (cmd == "WHO") { who(u, c); }
+	else if (cmd == "NOTICE") { notice(u, c); } // WORKS
+	else if (cmd == "WHO") { who(u, c); } // WORKS WITH ZERO PARAMS
 	else { sendResponseServer("421", cmd + " :" + cmd, u); } // WORKS
 }
 

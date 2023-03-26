@@ -245,16 +245,16 @@ void Server::who(User &user, Command& c)
 		sendResponseServer("461", "WHO :Too many parameters", user);
 		return ;
 	}
-	else
+	else if (c.getArgs().size() == 0)
 	{
 		for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
 		{
 			resp += hostname + "352 " + user.getNick() + " * " 
-				+ it->second.getName() + " * " + hostname + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
+				+ it->second.getName() + " * " + hostname + " " + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
 		}
-		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list";
+		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
 	}
-	sendResponse(resp, user);
+	sendResponseRaw(resp, user);
 }
 
 string	Server::getUserModes(void)

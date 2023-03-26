@@ -100,7 +100,8 @@ void	Server::notice(User &user, Command& c)
 		if (isUserRegistered(target))
 		{
 			User&	receiver = getUser(target);
-			sendResponse(user.getNick() + " :" + c.getArgs()[1], receiver);
+			string sender = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
+			sendResponseRaw(sender + " NOTICE " + receiver.getNick() + " :" + c.getArgs()[1] + "\r\n", receiver);
 		}
 		else if (inChannelNames(target))
 		{
@@ -109,8 +110,8 @@ void	Server::notice(User &user, Command& c)
 				;
 			else
 			{
-				string sender = user.getNick() + "@" + hostname;
-				sendToChannel(sender + " #" + channel._name + " :" + c.getArgs()[1], channel, user);
+				string sender = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
+				sendToChannel(sender + " NOTICE " + channel._name + " :" + c.getArgs()[1] + "\r\n", channel, user);
 			}
 		}
 		else 
