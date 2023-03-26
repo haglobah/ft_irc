@@ -32,7 +32,7 @@ class Channel
 		std::string							_topic;
 		std::map<const User *, Privileges>	_users;
 		// std::vector<int>					_modes;
-		Modes					_modes;
+		Modes								_modes; // CHANGED DUE COMPILING/TESTING
 		int									_userCount;
 
 		Channel();

@@ -3,8 +3,6 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <fcntl.h>
-#include <iostream>
 #include <netdb.h>
 #include <unistd.h>
 

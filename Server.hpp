@@ -38,7 +38,7 @@ class Server
 		void	run(void);
 
 		// SEND
-		void	sendResponse(string code, string msg, User &user);
+		void	sendResponseServer(string code, string msg, User &user);
 		void 	sendResponse(string message, User& user);
 		void 	sendResponseRaw(string message, User& user);
 		void	sendToChannel(string message, Channel c, User user);

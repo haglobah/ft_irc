@@ -12,7 +12,7 @@ class User
 		std::string		_hostmask;
 		int 			_userFd;
 		bool 			_isRegistered;
-		bool 			_allowConnection; // REMINDER: check if used
+		bool 			_allowConnection;
 		bool			_isDisconnected;
 		bool			_isOper;
 
@@ -37,7 +37,7 @@ class User
 		bool		isDisconnected() const;
 		void		setDisconnected();
 
-		void		setOper(bool isOper);
+		void		setOper(bool);
 
 		bool		getAllowConnection() const;
 		void		setAllowConnection();

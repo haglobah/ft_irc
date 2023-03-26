@@ -8,7 +8,7 @@ namespace {
 	const string hostname = ":ft_irc.de";
 }
 
-void	Server::sendResponse(string numeric_reply, string message, User& user)
+void	Server::sendResponseServer(string numeric_reply, string message, User& user)
 {
 	string response;
 
@@ -25,7 +25,7 @@ void	Server::sendResponse(string message, User& user)
 	string response;
 
 	response = ":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " " + message + "\r\n";
-	std::cout << "Response to send is: " << response << std::endl;
+	std::cout << "Response to send is|" << response << "| to: " << user.getFD() << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 	if (user.isDisconnected())
@@ -34,7 +34,7 @@ void	Server::sendResponse(string message, User& user)
 
 void	Server::sendResponseRaw(string message, User& user)
 {
-	std::cout << "Response to send is: " << message << std::endl;
+	std::cout << "Response to send is|" << message << "| to: " << user.getFD() << std::endl;
 	if (send(user.getFD(), message.c_str(), message.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 }
@@ -58,7 +58,7 @@ void	Server::privmsg(User &user, Command& c)
 {
 	if (c.getArgs().size() != 2)
 	{
-		sendResponse("461", "PRIVMSG :Not enough parameters", user);
+		sendResponseServer("461", "PRIVMSG :Not enough parameters", user);
 		return ;
 	}
 	vector<string> targets = split(c.getArgs()[0], ',');
@@ -75,7 +75,7 @@ void	Server::privmsg(User &user, Command& c)
 		{
 			Channel &channel = *getChannel(target);
 			if (!isUserIn(user, target))
-				sendResponse("404", user.getNick() + " :Cannot send to channel", user);
+				sendResponseServer("404", user.getNick() + " :Cannot send to channel", user);
 			else
 			{
 				string sender = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
@@ -84,7 +84,7 @@ void	Server::privmsg(User &user, Command& c)
 		}
 		else 
 		{
-			sendResponse("401", target + " :No such nick/channel", user);
+			sendResponseServer("401", target + " :No such nick/channel", user);
 		}
 	}
 }

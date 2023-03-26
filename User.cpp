@@ -1,6 +1,14 @@
 #include "Server.hpp"
 
-User::User(int fd, std::string hostmask): _nick(""), _name(""), _hostmask(hostmask), _userFd(fd), _allowConnection(true) , _isDisconnected(0){}
+User::User(int fd, std::string hostmask): _nick(""),
+										  _name(""), 
+										  _fullName("") ,
+										  _hostmask(hostmask),
+										  _userFd(fd), 
+										  _isRegistered(false) , 
+										  _allowConnection(true) , 
+										  _isDisconnected(0), 
+										  _isOper(false){}
 
 int	User::getFD() const {return (this->_userFd);}
 

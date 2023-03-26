@@ -15,7 +15,7 @@ map<string, string> Server::parseChannels(User &u, string channelStr)
 		if (!isChannelValid(c))
 		{
 			channels.clear();
-			sendResponse("403", c + " :No such channel found", u);
+			sendResponseServer("403", c + " :No such channel found", u);
 		}
         channels.insert(std::pair<string, string>(c, ""));
 	}
@@ -35,7 +35,7 @@ map<string, string> Server::parseChannels(User &u, string channelStr, string key
 		if (!isChannelValid(c) || notInChannelNames(c))
 		{
 			chan_keys.clear();
-			sendResponse("403", c + " :No such channel found", u);
+			sendResponseServer("403", c + " :No such channel found", u);
 		}
         chan_keys.insert(std::pair<string, string>(c, k));
 	}
@@ -49,7 +49,7 @@ map<string, string> Server::parseChannels(User &u, string channelStr, string key
 		if (!isChannelValid(c))
 		{
 			chan_keys.clear();
-			sendResponse("403", c + " :No such channel found", u);
+			sendResponseServer("403", c + " :No such channel found", u);
 		}
         chan_keys.insert(std::pair<string, string>(c, ""));
 	}
