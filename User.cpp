@@ -24,6 +24,7 @@ void	User::setDisconnected() {_isDisconnected = true;}
 void	User::setOper(bool isOper) {_isOper = isOper;}
 
 bool	User::getAllowConnection() const {return (_allowConnection);}
+void	User::setAllowConnection() {_allowConnection = true;}
 
 bool	User::isRegistered() {return (_isRegistered);}
 void	User::registrate() {_isRegistered = true;}

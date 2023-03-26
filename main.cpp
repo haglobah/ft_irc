@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 	{
 		cerr << e.what() << endl;
 	}
-	// Command c("PART test");
+	// Command& c("PART test");
 	// User u(12, "127.0.0.1");
 	// Server ircserv(argc, argv);
 	// ircserv.executeCommand(u ,c);

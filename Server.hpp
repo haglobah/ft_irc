@@ -29,7 +29,7 @@ class Server
 		void	setupPoll(int);
 		int		addConnection(int);
 		int		removeConnection(int);
-		void	executeCommand(User &, Command);
+		void	executeCommand(User &, Command&);
 		void	processCommands(string, int);
 		void	receiveInput(int);
 		void	acceptUser();
@@ -44,35 +44,34 @@ class Server
 		void	sendToChannel(string message, Channel c, User user);
 
 		// COMMANDS
-		// REMINDER: Shouldn't _Command c_ be _Command &c_ ? 
-		void	pass(User &user, Command c);
-		void	nick(User &user, Command c);
-		void	user(User &user, Command c);
-		void	ping(User &user, Command c);
-		void	cap(User &user, Command c);
-		void	oper(User &user, Command c);
-		void	quit(User &user, Command c);
+		void	pass(User &user, Command& c);
+		void	nick(User &user, Command& c);
+		void	user(User &user, Command& c);
+		void	ping(User &user, Command& c);
+		void	cap(User &user, Command& c);
+		void	oper(User &user, Command& c);
+		void	quit(User &user, Command& c);
 		
-		void	join(User &user, Command c);
-		void	part(User &user, Command c);
-		void	topic(User &user, Command c);
-		void	list(User &user, Command c);
-		void	kick(User &user, Command c);
+		void	join(User &user, Command& c);
+		void	part(User &user, Command& c);
+		void	topic(User &user, Command& c);
+		void	list(User &user, Command& c);
+		void	kick(User &user, Command& c);
 
+		void	registrate(User &user);
 		void	removeChannel(vector<Channel>::iterator);
-		void	applyUserModes(User &user, Command c);
+		void	applyUserModes(User &user, Command& c);
 		string	getUserModes(void);
 		string	getChannelModes(string name);
-		void	userMode(string target, User &user, Command c);
-		void	channelMode(string target, User &user, Command c);
-		void	mode(User &user, Command c);
+		void	userMode(string target, User &user, Command& c);
+		void	channelMode(string target, User &user, Command& c);
+		void	mode(User &user, Command& c);
 		string	getRPL_list(User &u);
-		string	getRPL_listUser(User &u);
 		string	getRPL_namelist(std::vector<Channel>::iterator chan_it, User &u);
 
-		void	privmsg(User &user, Command c);
-		void	notice(User &user, Command c);
-		void	who(User &user, Command c);
+		void	privmsg(User &user, Command& c);
+		void	notice(User &user, Command& c);
+		void	who(User &user, Command& c);
 
 		bool	alreadyInUse(string mode, string name);
 		map<string, string>	parseChannels(User &u, string channelStr);
@@ -90,7 +89,6 @@ class Server
 		bool	isUserIn(User &u, string name);
 		bool	isUserRegistered(string name);
 		string	getChannelNames(User user);
-		string	getChannelNamesUser(User user);
 		vector<string>	parseChannelPRIVMSG(User &u, string channelStr);
 		
 	private:

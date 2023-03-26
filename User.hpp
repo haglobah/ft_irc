@@ -40,6 +40,7 @@ class User
 		void		setOper(bool isOper);
 
 		bool		getAllowConnection() const;
+		void		setAllowConnection();
 
 		bool		isRegistered();
 		void		registrate();

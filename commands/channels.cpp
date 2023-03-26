@@ -48,7 +48,7 @@ void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
 	addUser(_channels.end() - 1, user);
 }
 
-void	Server::join(User &user, Command c)
+void	Server::join(User &user, Command& c)
 {
 	map<string, string> chan_keys;
 
@@ -74,7 +74,7 @@ void	Server::join(User &user, Command c)
 	}
 }
 
-void	Server::topic(User &user, Command c)
+void	Server::topic(User &user, Command& c)
 {
 	if (c.getArgs().size() > 2 || c.getArgs().size() < 1)
 		sendResponse("461", "TOPIC :Not enough parameters", user);
@@ -117,7 +117,7 @@ void	Server::topic(User &user, Command c)
 	}
 }
 
-void	Server::part(User &user, Command c)
+void	Server::part(User &user, Command& c)
 {
 	if (c.getArgs().size() > 2 || c.getArgs().size() < 1)
 	{
@@ -132,25 +132,25 @@ void	Server::part(User &user, Command c)
 		string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
 		if (!isUserIn(user, it->first))
 			sendResponse("442", it->first + " :You're not on that channel", user);
-		else if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
+		else if (!c.getArgs()[1].empty())
 		{
 			getChannel(it->first)->removeUser(&user);
 			sendResponseRaw(prefix + "PART " + it->first + "\r\n", user);
 			sendToChannel(prefix + "PART " + it->first + "\r\n", *getChannel(it->first), user);
-			sendResponseRaw(getRPL_listUser(user), user);
+			sendResponseRaw(getRPL_list(user), user);
 			sendToChannel(getRPL_list(user), *getChannel(it->first), user);
 		}
 		else 
 		{
 			getChannel(it->first)->removeUser(&user);
 			sendToChannel(prefix + "PART " + it->first + " :" + c.getArgs()[1] + "\r\n", *getChannel(it->first), user);
-			sendResponseRaw(getRPL_listUser(user), user);
+			sendResponseRaw(getRPL_list(user), user);
 			sendToChannel(getRPL_list(user), *getChannel(it->first), user);
 		}
 	}
 }
 
-void	Server::list(User &user, Command c)
+void	Server::list(User &user, Command& c)
 {
 	std::stringstream userCount;
 
@@ -185,7 +185,7 @@ void	Server::list(User &user, Command c)
 	}
 }
 
-void	Server::kick(User &user, Command c)
+void	Server::kick(User &user, Command& c)
 {
 	if (c.getArgs().size() != 2)
 	{
@@ -215,14 +215,14 @@ void	Server::kick(User &user, Command c)
 	
 }
 
-void	Server::oper(User &user, Command c)
+void	Server::oper(User &user, Command& c)
 {
 	if (c.getArgs().size() != 2)
 		sendResponse("461", "OPER :Not enough parameters", user);
 	else
 	{
 		if (_password != c.getArgs()[1])
-			sendResponse("464", " :Password incorrect", user);
+			sendResponse("464", ":Password incorrect", user);
 		else
 		{
 			for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
@@ -230,13 +230,13 @@ void	Server::oper(User &user, Command c)
 				map<const User *, Privileges>::iterator channelMap = it->_users.find(&user);
 				channelMap->second = OPERATOR;
 			}
-			sendResponse("381", " :You are now an IRC operator", user);
+			sendResponse("381", ":You are now an IRC operator", user);
 		}
 	}
 
 }
 
-void Server::who(User &user, Command c)
+void Server::who(User &user, Command& c)
 {
 	string resp;
 
@@ -252,9 +252,9 @@ void Server::who(User &user, Command c)
 			resp += hostname + "352 " + user.getNick() + " * " 
 				+ it->second.getName() + " * " + hostname + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
 		}
-		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list";
+		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
 	}
-	sendResponse(resp, user);
+	sendResponseRaw(resp, user);
 }
 
 string	Server::getUserModes(void)
@@ -262,7 +262,7 @@ string	Server::getUserModes(void)
 	return ("n None,\no Operator");
 }
 
-void	Server::applyUserModes(User &user, Command c)
+void	Server::applyUserModes(User &user, Command& c)
 {
 	string modestring = c.getArgs()[1];
 	vector<string> v(0);
@@ -279,22 +279,22 @@ void	Server::applyUserModes(User &user, Command c)
 	}
 	else
 	{
-		sendResponse("501", " :Unknown MODE flag", user);
+		sendResponse("501", ":Unknown MODE flag", user);
 	}
 }
 
-void	Server::userMode(string userNick, User &user, Command c)
+void	Server::userMode(string userNick, User &user, Command& c)
 {
 	if (!isUserRegistered(userNick))
 		sendResponse("401", userNick + " :No such nick/channel", user);
 	else if (userNick != user.getNick())
-		sendResponse("502", " :Can't change mode for other users", user);
+		sendResponse("502", ":Can't change mode for other users", user);
 	else
 	{
 		if (c.getArgs().size() == 1)
 		{
 			string userModes = getUserModes();
-			sendResponse("221", " :These are our modes " + userModes, user);
+			sendResponse("221", ":These are our modes " + userModes, user);
 		}
 		else 
 		{
@@ -310,7 +310,7 @@ void	Server::userMode(string userNick, User &user, Command c)
 
 // }
 
-void	Server::channelMode(string channelName, User &user, Command c)
+void	Server::channelMode(string channelName, User &user, Command& c)
 {
 	if (notInChannelNames(channelName))
 		sendResponse("403", channelName + " :No such nick/channel", user);
@@ -319,7 +319,7 @@ void	Server::channelMode(string channelName, User &user, Command c)
 		if (c.getArgs().size() == 1)
 		{
 			// string userModes = getChannelModes(channelName);
-			sendResponse("221", " :These are our modes 'userModes'", user);
+			sendResponse("221", ":These are our modes 'userModes'", user);
 		}
 		else 
 		{
@@ -333,7 +333,7 @@ static bool	isChannelMode(string target)
 	return (target[0] == '#');
 }
 
-void	Server::mode(User &user, Command c)
+void	Server::mode(User &user, Command& c)
 {
 	if (c.getArgs().size() < 1)
 		sendResponse("461", "MODE :Not enough parameters", user);

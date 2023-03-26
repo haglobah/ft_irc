@@ -53,14 +53,13 @@ string	getCommand(string& buf)
 	
 	while (buf.find("\r\n") != std::string::npos)
 		buf.replace(buf.find("\r\n"), 2, "\n");
-	// REMINDER: might be a bug
 	newLine = buf.find('\n');
 	cmd = buf.substr(0, newLine);
 	buf.erase(0, newLine + 1);
 	return (cmd);
 }
 
-void	Server::executeCommand(User &u, Command c)
+void	Server::executeCommand(User &u, Command& c)
 {
 	std::string cmd = c.getName();
 	cout << "Command is: |" << cmd << "|";
@@ -70,7 +69,7 @@ void	Server::executeCommand(User &u, Command c)
 	if 		(cmd == "PASS") { pass(u, c); } // WORKS
 	else if (cmd == "CAP") { cap(u, c); } // WORKS
 	else if (cmd == "PING") { ping(u, c); } // WORKS
-	else if (!u.isRegistered())	{ sendResponse("462", "You need to register first!", u); } // WORKS
+	else if (!u.getAllowConnection())	{ sendResponse("462", ":You need to register first!", u); } // WORKS
 	else if (cmd == "NICK") { nick(u, c); } // WORKS
 	else if (cmd == "USER") { user(u, c); } // WORKS
 	else if (cmd == "OPER") { oper(u, c); } // WORKS
@@ -81,7 +80,7 @@ void	Server::executeCommand(User &u, Command c)
 	else if (cmd == "PART") { part(u, c); } // WORKS
 	else if (cmd == "TOPIC") { topic(u, c); } // WORKS
 	else if (cmd == "LIST") { list(u, c); } // WORKS
-	else if (cmd == "KICK") { kick(u, c); }  // DOESNT WORK
+	else if (cmd == "KICK") { kick(u, c); }  // DOESNT WORK -> maybe just remove
 
 	// SERVER
 	else if (cmd == "MODE") { mode(u, c); }
@@ -135,7 +134,7 @@ void	Server::disconnectUser(User &u)
 			it->removeUser(&u);
 			sendToChannel(":" + u.getNick() + "!" + u.getName() + "@" + hostname.substr(1) + " QUIT " + it->_name + "\r\n", *it, u);
 			sendToChannel(getRPL_list(u), *it, u);
-			sendResponse(getRPL_list(u), u);
+			sendResponseRaw(getRPL_list(u), u);
 		}
 		if (it->_userCount == 0)
 			removeChannel(it);

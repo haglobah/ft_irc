@@ -17,19 +17,33 @@ string parsePassword(string password)
 	return (password);
 }
 
-void	Server::pass(User &user, Command c)
+void	Server::registrate(User &user)
+{
+	if (!user.getNick().empty() 
+		&& !user.getName().empty()
+		&& !user.getFull().empty() 
+		&& user.getAllowConnection()
+		&& !user.isRegistered())
+	{
+		sendResponse("001", " :Welcome to the " + hostname + " Network " + user.getNick() + "!" , user);
+		sendResponseRaw(getRPL_list(user), user);
+		user.registrate();
+	}
+}
+
+void	Server::pass(User &user, Command& c)
 {
 	string password;
 
 	if (c.getArgs().size() != 1)
 		sendResponse("461", "PASS :Not enough parameters", user);
 	else if (user.isRegistered())
-		sendResponse("462", " :You may not reregister", user);
+		sendResponse("462", ":You may not reregister", user);
 	password = parsePassword(c.getArgs()[0]);
 	if (password != _password)
-		sendResponse("464", " :Password incorrect", user);
+		sendResponse("464", ":Password incorrect", user);
 	else
-		user.registrate();
+		user.setAllowConnection();
 }
 
 bool Server::alreadyInUse(string mode, string name)
@@ -52,7 +66,7 @@ bool Server::alreadyInUse(string mode, string name)
 	return (false);
 }
 
-void	Server::nick(User &user, Command c)
+void	Server::nick(User &user, Command& c)
 {
 	if (c.getArgs().size() != 1)
 		sendResponse("461", "NICK :Not enough parameters", user);
@@ -62,29 +76,30 @@ void	Server::nick(User &user, Command c)
 		sendResponse("433", c.getArgs()[0] + " :Nickname is already in use", user);
 	else
 	{
-		string oldNickname(user.getNick());
-
+		if (user.getNick().empty())
+			sendResponse("NICK " + c.getArgs()[0], user);
+		else
+			sendResponseRaw(":" + user.getNick() + "!" + user.getName() + " NICK " + c.getArgs()[0] + "\r\n", user);
 		user.setNick(c.getArgs()[0]);
-		sendResponse("NICK :" + oldNickname + " changed his nickname to " + user.getNick(), user);
+		registrate(user);
 	}
 }
 
-void	Server::user(User &user, Command c)
+void	Server::user(User &user, Command& c)
 {
 	if (c.getArgs().size() != 4 || c.getArgs()[0].empty())
 		sendResponse("461", "USER :Not enough parameters", user);
 	else if (alreadyInUse("user", c.getArgs()[0]))
-		sendResponse("462"," :You may not reregister", user);
+		sendResponse("462",":You may not reregister", user);
 	else
 	{
 		user.setName(c.getArgs()[0]);
 		user.setFull(c.getArgs()[3]);
-		sendResponse("001", " Welcome to the " + hostname + " Network " + user.getNick() + "!" , user);
-		sendResponseRaw(getRPL_list(user), user);
+		registrate(user);
 	}
 }
 
-void	Server::ping(User &user, Command c)
+void	Server::ping(User &user, Command& c)
 {
 	if (c.getArgs().size() < 1)
 		sendResponse("461", "PING :Not enough parameters", user);
@@ -99,13 +114,13 @@ void	Server::ping(User &user, Command c)
 	}
 }
 
-void	Server::cap(User &user, Command c)
+void	Server::cap(User &user, Command& c)
 {
 	if (c.getArgs()[0] == "LS")
 		sendResponse("CAP * LS :End of CAP LS negotiation", user);
 }
 
-void	Server::quit(User &user, Command c)
+void	Server::quit(User &user, Command& c)
 {
 	// REMINDER: message needs to get send to channel
 	if (c.getArgs().size() == 0)

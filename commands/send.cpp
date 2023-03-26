@@ -12,7 +12,7 @@ void	Server::sendResponse(string numeric_reply, string message, User& user)
 {
 	string response;
 
-	response = hostname + " " + numeric_reply + " " + user.getNick() + " :" + message + "\r\n";
+	response = hostname + " " + numeric_reply + " " + user.getNick() + " " + message + "\r\n";
 	std::cout << "Response to send is|" << response << "| to: " << user.getFD() << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
@@ -54,7 +54,7 @@ void	Server::sendToChannel(string message, Channel c, User user)
 }
 
 
-void	Server::privmsg(User &user, Command c)
+void	Server::privmsg(User &user, Command& c)
 {
 	if (c.getArgs().size() != 2)
 	{
@@ -89,7 +89,7 @@ void	Server::privmsg(User &user, Command c)
 	}
 }
 
-void	Server::notice(User &user, Command c)
+void	Server::notice(User &user, Command& c)
 {
 	if (c.getArgs().size() != 2)
 	{
@@ -102,7 +102,7 @@ void	Server::notice(User &user, Command c)
 		if (isUserRegistered(target))
 		{
 			User&	receiver = getUser(target);
-			sendResponse(user.getNick() + ": " + c.getArgs()[1], receiver);
+			sendResponse(user.getNick() + " :" + c.getArgs()[1], receiver);
 		}
 		else if (inChannelNames(target))
 		{
