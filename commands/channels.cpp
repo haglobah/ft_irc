@@ -53,7 +53,10 @@ void	Server::join(User &user, Command c)
 	map<string, string> chan_keys;
 
 	if (c.getArgs().size() > 2)
+	{
 		sendResponse("461", "JOIN :Not enough parameters", user);
+		return ;
+	}
 	else if (c.getArgs().size() == 1)
 		chan_keys = parseChannels(user, c.getArgs()[0]);
 	else if (c.getArgs().size() == 2)
@@ -87,9 +90,7 @@ void	Server::topic(User &user, Command c)
 			sendResponseRaw(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n", user);
 		else
 		{
-			sendResponseRaw(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :" + chan_it->_topic + "\r\n", user);
-			// REMINDER: add message to channel
-			sendResponse("333", c.getArgs()[0] + " " + user.getNick() + " " , user);
+			sendResponseRaw(":ft_irc.de 332 " + user.getNick() + " " + chan_it->_name + " :" + chan_it->_topic + "\r\n", user);
 		}
 	}
 	else if (c.getArgs().size() == 2)
@@ -103,15 +104,15 @@ void	Server::topic(User &user, Command c)
 		}
 		else if (c.getArgs()[1].empty())
 		{
-			chan_it->_topic.clear();
 			sendResponseRaw(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n", user);
+			sendToChannel(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n", *chan_it , user);
+			chan_it->_topic.clear();
 		}
 		else
 		{
 			chan_it->_topic = c.getArgs()[1];
-			sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@ TOPIC " + chan_it->_name + " :" + chan_it->_topic + "\r\n", user);
-			// REMINDER: add message to channel
-			sendToChannel("333 " + c.getArgs()[0] + " " + user.getNick() + " ", *chan_it, user);
+			sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname + " TOPIC " + chan_it->_name + " :" + chan_it->_topic + "\r\n", user);
+			sendToChannel(":" + user.getNick() + "!" + user.getName() + "@" + hostname + " TOPIC " + chan_it->_name + " :" + chan_it->_topic + "\r\n", *chan_it, user);
 		}
 	}
 }
@@ -119,7 +120,10 @@ void	Server::topic(User &user, Command c)
 void	Server::part(User &user, Command c)
 {
 	if (c.getArgs().size() > 2 || c.getArgs().size() < 1)
+	{
 		sendResponse("461", "PART :Not enough parameters", user);
+		return ;
+	}
 
 	map<string, string>		chan_keys;
 	chan_keys = parseChannels(user, c.getArgs()[0]);
@@ -148,15 +152,15 @@ void	Server::part(User &user, Command c)
 
 void	Server::list(User &user, Command c)
 {
+	std::stringstream userCount;
+
 	if (c.getArgs().size() > 1)
 		sendResponse("461", "LIST :Not enough parameters", user);
 	else if (c.getArgs().size() == 0)
-	{
 		sendResponseRaw(getRPL_list(user), user);
-	}
 	else
 	{
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " 321 " + user.getNick() + " Channel: Users Name\r\n", user);
+		sendResponseRaw(hostname + "321 " + user.getNick() + " Channel :Users Name\r\n", user);
 		map<string, string>		chan_keys;
 		chan_keys = parseChannels(user, c.getArgs()[0]);
 		for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
@@ -166,20 +170,18 @@ void	Server::list(User &user, Command c)
 				;
 			else if (chan_It->_topic.empty())
 			{
-				std::stringstream userCount;
 				userCount << chan_It->_userCount;
 				string userStr = userCount.str();
-				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + chan_It->_name + " " + userStr + " :No topic is set\r\n", user);
+				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_It->_name + " " + userStr + " :No topic is set\r\n", user);
 			}
 			else
 			{
-				std::stringstream userCount;
 				userCount << chan_It->_userCount;
 				string userStr = userCount.str();
-				sendResponseRaw(":ft_irc.de 322 " + user.getNick() + " " + chan_It->_name + " " + userStr + chan_It->_topic + "\r\n", user);
+				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_It->_name + " " + userStr + " :" + chan_It->_topic + "\r\n", user);
 			}
 		}
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " 323 " + user.getNick() + " End of /LIST\r\n", user);
+		sendResponseRaw(hostname + "323 " + user.getNick() + " End of /LIST\r\n", user);
 	}
 }
 
@@ -239,7 +241,10 @@ void Server::who(User &user, Command c)
 	string resp;
 
 	if (c.getArgs().size() > 1)
+	{
 		sendResponse("461", "WHO :Too many parameters", user);
+		return ;
+	}
 	else
 	{
 		for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)

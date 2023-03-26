@@ -79,7 +79,7 @@ void	Server::executeCommand(User &u, Command c)
 	// CHANNEL
 	else if (cmd == "JOIN") { join(u, c); } // WORKS
 	else if (cmd == "PART") { part(u, c); } // WORKS
-	else if (cmd == "TOPIC") { topic(u, c); } // KINDA WORKS
+	else if (cmd == "TOPIC") { topic(u, c); } // WORKS
 	else if (cmd == "LIST") { list(u, c); } // WORKS
 	else if (cmd == "KICK") { kick(u, c); }  // DOESNT WORK
 
