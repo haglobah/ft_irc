@@ -8,29 +8,6 @@ namespace {
 	const string hostname = "ft_irc.de";
 }
 
-string parsePassword(string password)
-{
-	string ret;
-
-	if (password.front() == ':')
-		password = password.substr(1);
-	return (password);
-}
-
-void	Server::registrate(User &user)
-{
-	if (!user.getNick().empty() 
-		&& !user.getName().empty()
-		&& !user.getFull().empty() 
-		&& user.getAllowConnection()
-		&& !user.isRegistered())
-	{
-		sendResponseServer("001", " :Welcome to the " + hostname + " Network " + user.getNick() + "!" , user);
-		sendResponseRaw(getRPL_list(user), user);
-		user.registrate();
-	}
-}
-
 void	Server::pass(User &user, Command& c)
 {
 	string password;
@@ -46,26 +23,6 @@ void	Server::pass(User &user, Command& c)
 		user.setAllowConnection();
 }
 
-bool Server::alreadyInUse(string mode, string name)
-{
-	std::map<int, User>::iterator it = _users.begin();
-	
-	for (; it != _users.end(); it ++)
-	{
-		if (mode == "user")
-		{
-			if (it->second.getName() == name)
-				return (true);
-		}
-		else if (mode == "nick")
-		{
-			if (it->second.getNick() == name)
-				return (true);
-		}
-	}
-	return (false);
-}
-
 void	Server::nick(User &user, Command& c)
 {
 	if (c.getArgs().size() != 1)
@@ -76,7 +33,7 @@ void	Server::nick(User &user, Command& c)
 		sendResponseServer("433", c.getArgs()[0] + " :Nickname is already in use", user);
 	else
 	{
-		if (user.getNick().empty())
+		if (user.getNick() == "*")
 			sendResponse("NICK " + c.getArgs()[0], user);
 		else
 			sendResponseRaw(":" + user.getNick() + "!" + user.getName() + " NICK " + c.getArgs()[0] + "\r\n", user);

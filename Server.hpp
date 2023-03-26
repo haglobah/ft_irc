@@ -105,8 +105,10 @@ class Server
 		void loop();
 };
 
-bool isChannelValid(string channel);
-bool contains(string &haystack, string const &needles);
-void to_upper(string& str);
-void printsvec(vector<string> strs);
+
+string			parsePassword(string password);
+bool			isChannelValid(string channel);
+bool			contains(string &haystack, string const &needles);
+void			to_upper(string& str);
+void			printsvec(vector<string> strs);
 vector<string>	split(string str, char delim);

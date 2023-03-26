@@ -13,7 +13,7 @@ void	Server::sendResponseServer(string numeric_reply, string message, User& user
 	string response;
 
 	response = hostname + " " + numeric_reply + " " + user.getNick() + " " + message + "\r\n";
-	std::cout << "Response to send is|" << response << "| to: " << user.getFD() << std::endl;
+	std::cout << "Response to send is|" << response << "| to: " << user.getNick() << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
 	if (user.isDisconnected())
@@ -24,8 +24,8 @@ void	Server::sendResponse(string message, User& user)
 {
 	string response;
 
-	response = ":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " " + message + "\r\n";
-	std::cout << "Response to send is|" << response << "| to: " << user.getFD() << std::endl;
+	response = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " " + message + "\r\n";
+	std::cout << "Response to send is|" << response << "| to: " << user.getNick() << std::endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 	if (user.isDisconnected())
@@ -34,14 +34,14 @@ void	Server::sendResponse(string message, User& user)
 
 void	Server::sendResponseRaw(string message, User& user)
 {
-	std::cout << "Response to send is|" << message << "| to: " << user.getFD() << std::endl;
+	std::cout << "Response to send is|" << message << "| to: " << user.getNick() << std::endl;
 	if (send(user.getFD(), message.c_str(), message.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 }
 
 void	Server::sendToChannel(string message, Channel c, User user)
 { 
-	std::cout << "Message to the channel is: " << message << std::endl;
+	std::cout << "Message to the channel is|" << message << "| to: " << c._name << std::endl;
 	for(map<const User *, Privileges>::iterator it = c._users.begin();
 		it != c._users.end();
 		it++)
@@ -82,10 +82,8 @@ void	Server::privmsg(User &user, Command& c)
 				sendToChannel(sender + " PRIVMSG " + channel._name + " :" + c.getArgs()[1] + "\r\n", channel, user);
 			}
 		}
-		else 
-		{
+		else
 			sendResponseServer("401", target + " :No such nick/channel", user);
-		}
 	}
 }
 
