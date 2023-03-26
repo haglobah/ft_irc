@@ -38,58 +38,58 @@ class Server
 		void	run(void);
 
 		// SEND
-		void	sendResponseServer(string code, string msg, User &user);
-		void 	sendResponse(string message, User& user);
-		void 	sendResponseRaw(string message, User& user);
-		void	sendToChannel(string message, Channel c, User user);
+		void	sendResponseServer(string, string, User&);
+		void 	sendResponse(string, User&);
+		void 	sendResponseRaw(string, User&);
+		void	sendToChannel(string, Channel, User);
 
 		// COMMANDS
-		void	pass(User &user, Command& c);
-		void	nick(User &user, Command& c);
-		void	user(User &user, Command& c);
-		void	ping(User &user, Command& c);
-		void	cap(User &user, Command& c);
-		void	oper(User &user, Command& c);
-		void	quit(User &user, Command& c);
+		void	pass(User&, Command&);
+		void	nick(User&, Command&);
+		void	user(User&, Command&);
+		void	ping(User&, Command&);
+		void	cap(User&, Command&);
+		void	oper(User&, Command&);
+		void	quit(User&, Command&);
 		
-		void	join(User &user, Command& c);
-		void	part(User &user, Command& c);
-		void	topic(User &user, Command& c);
-		void	list(User &user, Command& c);
-		void	kick(User &user, Command& c);
+		void	join(User&, Command&);
+		void	part(User&, Command&);
+		void	topic(User&, Command&);
+		void	list(User&, Command&);
+		void	kick(User&, Command&);
 
-		void	registrate(User &user);
+		void	registrate(User&);
 		void	removeChannel(vector<Channel>::iterator);
-		void	applyUserModes(User &user, Command& c);
+		void	applyUserModes(User&, Command&);
 		string	getUserModes(void);
-		string	getChannelModes(string name);
-		void	userMode(string target, User &user, Command& c);
-		void	channelMode(string target, User &user, Command& c);
-		void	mode(User &user, Command& c);
-		string	getRPL_list(User &u);
-		string	getRPL_namelist(std::vector<Channel>::iterator chan_it, User &u);
+		string	getChannelModes(string);
+		void	userMode(string, User&, Command&);
+		void	channelMode(string, User&, Command&);
+		void	mode(User&, Command&);
+		string	getRPL_list(User&);
+		string	getRPL_namelist(std::vector<Channel>::iterator, User&);
 
-		void	privmsg(User &user, Command& c);
-		void	notice(User &user, Command& c);
-		void	who(User &user, Command& c);
+		void	privmsg(User&, Command&);
+		void	notice(User&, Command&);
+		void	who(User&, Command&);
 
-		bool	alreadyInUse(string mode, string name);
-		map<string, string>	parseChannels(User &u, string channelStr);
-		map<string, string>	parseChannels(User &u, string channelStr, string keyStr);
+		bool	alreadyInUse(string, string);
+		map<string, string>	parseChannels(User&, string);
+		map<string, string>	parseChannels(User&, string, string);
 		vector<string> parseUsers(string);
 
-		string	getUsersIn(vector<Channel>::iterator chan_it);
-		void	addUser(vector<Channel>::iterator it, User &user);
-		void	joinChannel(map<string, string>::iterator chan_keys, User &user);
-		bool	notInChannelNames(string channel);
-		bool	inChannelNames(string channel);
+		string	getUsersIn(vector<Channel>::iterator);
+		void	addUser(vector<Channel>::iterator, User&);
+		void	joinChannel(map<string, string>::iterator, User&);
+		bool	notInChannelNames(string);
+		bool	inChannelNames(string);
 
-		vector<Channel>::iterator	getChannel(string name);
-		User&	getUser(string name);
-		bool	isUserIn(User &u, string name);
-		bool	isUserRegistered(string name);
-		string	getChannelNames(User user);
-		vector<string>	parseChannelPRIVMSG(User &u, string channelStr);
+		vector<Channel>::iterator	getChannel(string);
+		User&	getUser(string);
+		bool	isUserIn(User&, string);
+		bool	isUserRegistered(string);
+		string	getChannelNames(User);
+		vector<string>	parseChannelPRIVMSG(User&, string);
 		
 	private:
 		int 			_port;
@@ -106,9 +106,9 @@ class Server
 };
 
 
-string			parsePassword(string password);
-bool			isChannelValid(string channel);
-bool			contains(string &haystack, string const &needles);
-void			to_upper(string& str);
-void			printsvec(vector<string> strs);
-vector<string>	split(string str, char delim);
+string			parsePassword(string);
+bool			isChannelValid(string);
+bool			contains(string&, string const &);
+void			to_upper(string&);
+void			printsvec(vector<string>);
+vector<string>	split(string, char);
