@@ -29,6 +29,7 @@ Server::Server(int argc, char **argv){
 	_password = argv[2];
 	if (invalid(_password)) throw incorrectPassword();
 	//REMINDER: Do we need this?
+	_operpass  = "operpass";
 	_stop = false;
 }
 

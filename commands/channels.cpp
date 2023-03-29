@@ -223,16 +223,13 @@ void	Server::oper(User &user, Command& c)
 		sendResponseServer("461", "OPER :Not enough parameters", user);
 	else
 	{
-		if (_password != c.getArgs()[1])
+		// if (user.getNick() != c.getArgs()[0]) -> the specification is unclear here. It seems like we don't have to check the name in our case.
+		if (_operpass != c.getArgs()[1])
 			sendResponseServer("464", " :Password incorrect", user);
 		else
 		{
-			for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
-			{
-				map<const User *, Privileges>::iterator channelMap = it->_users.find(&user);
-				channelMap->second = OPERATOR;
-			}
-			sendResponseServer("381", " :You are now an IRC operator", user);
+			user.setOper(true);
+			sendResponseServer("381", " :You are now a Server operator", user);
 		}
 	}
 

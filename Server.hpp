@@ -94,6 +94,7 @@ class Server
 	private:
 		int 			_port;
 		string			_password;
+		string			_operpass;
 		pollfd			_userPoll[SOMAXCONN];
 		nfds_t 			_activeUsers;
 		int				_activePoll;
