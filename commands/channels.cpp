@@ -192,24 +192,26 @@ void	Server::kick(User &user, Command& c)
 		sendResponseServer("461", "KICK :Not enough parameters", user);
 		return ;
 	}
-	
-	Channel& chan = *getChannel(c.getArgs()[0]);
+
+	string channelName = c.getArgs()[0];
+	Channel& chan = *getChannel(channelName);
 	std::map<const User *, Privileges>::iterator it = chan._users.find(&user);
-	if (notInChannelNames(c.getArgs()[0]))
-		sendResponseServer("403", c.getArgs()[0] + " :No such channel", user);
+	if (notInChannelNames(channelName))
+		sendResponseServer("403", channelName + " :No such channel", user);
 	else if (it == chan._users.end())
-		sendResponseServer("442", c.getArgs()[0] + " :You're not on that channel", user);
+		sendResponseServer("442", channelName + " :You're not on that channel", user);
 	else if (it->second != OPERATOR)
-		sendResponseServer("482", c.getArgs()[0] + " :You're not channel operator", user);
+		sendResponseServer("482", channelName + " :You're not channel operator", user);
 	else
 	{
-		User& userToKick = getUser(c.getArgs()[1]);
-		if (!isUserIn(userToKick, c.getArgs()[0]))
-			sendResponseServer("441", userToKick.getNick() + " " + c.getArgs()[0] + " :They aren't on that channel", user);
+		string userName = c.getArgs()[1];
+		User& userToKick = getUser(userName);
+		if (!isUserIn(userToKick, channelName))
+			sendResponseServer("441", userToKick.getNick() + " " + channelName + " :They aren't on that channel", user);
 		else
 		{
 			chan.removeUser(&userToKick);
-			sendResponse("KICK " + user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + c.getArgs()[0], user);
+			sendResponse("KICK " + user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + channelName, user);
 		}
 	}
 	
