@@ -264,23 +264,22 @@ string	Server::getUserModes(void)
 void	Server::applyUserModes(User &user, Command& c)
 {
 	string modestring = c.getArgs()[1];
-	vector<string> v(0);
 	
 	if (modestring == "+o")
 	{
 		user.setOper(true);
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "+o", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " +o", user);
 	}
 	else if (modestring == "-o")
 	{
 		user.setOper(false);
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "-o", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o", user);
 	}
 	else
 	{
 		sendResponseServer("501", " :Unknown MODE flag", user);
 	}
-}
+}	
 
 void	Server::userMode(string userNick, User &user, Command& c)
 {
@@ -302,12 +301,35 @@ void	Server::userMode(string userNick, User &user, Command& c)
 	}
 }
 
-// string	Server::getChannelModes(string name)
-// {
-// 	vector<Channel>::iterator it = getChannel(name);
-// 	return (it->getActiveModes());
-
-// }
+void	Server::changeUserMode(Channel &chan, User &user, Command& c)
+{
+	string modestring = c.getArgs()[1];
+	
+	if (modestring == "+o")
+	{
+		chan.updatePrivileges(&user, OPERATOR);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " +o", user);
+	}
+	else if (modestring == "-o")
+	{
+		chan.updatePrivileges(&user, VOICE_PRIO);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o", user);
+	}
+	// else if (modestring == "+b")
+	// {
+	// 	chan.updatePrivileges(&user, VOICE_PRIO);
+	// 	sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "-o", user);
+	// }
+	// else if (modestring == "-o")
+	// {
+	// 	chan.updatePrivileges(&user, VOICE_PRIO);
+	// 	sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "-o", user);
+	// }
+	else
+	{
+		sendResponseServer("501", " :Unknown MODE flag", user);
+	}
+}
 
 void	Server::channelMode(string channelName, User &user, Command& c)
 {
@@ -315,14 +337,15 @@ void	Server::channelMode(string channelName, User &user, Command& c)
 		sendResponseServer("403", channelName + " :No such nick/channel", user);
 	else
 	{
+		vector<Channel>::iterator chan_it = getChannel(channelName);
 		if (c.getArgs().size() == 1)
 		{
-			// string userModes = getChannelModes(channelName);
-			sendResponseServer("221", " :These are our modes 'userModes'", user);
+			string channelModes = chan_it->getActiveModes();
+			sendResponseServer("221", " :These are our modes " + channelModes, user);
 		}
 		else 
 		{
-			applyUserModes(user, c);
+			changeUserMode(*chan_it, user, c);
 		}
 	}
 }

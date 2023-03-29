@@ -41,17 +41,20 @@ void	Channel::showUsers()
 {
 	for (std::map<const User *, Privileges>::iterator it = _users.begin(); it != _users.end(); it++)
 	{
-		std::cout << "User: '" << it->first->getName() << "'" << std::endl;
+		std::cout << "User: '" << it->first->getNick() << "'" << "[ " << it->second << " ]" << std::endl;
 	}
 }
 
-string	getActiveModes(void)
+string	Channel::getActiveModes(void)
 {
-	return ("Test");
+	return ("n None\n");
 }
 
-void	updatePrivileges(User &u)
+void	Channel::updatePrivileges(User const *uptr, Privileges priv)
 {
-	// REMINDER
-	(void)u;
+	// std::cout << std::endl << std::endl;
+	// showUsers();
+	_users.at(uptr) = priv;
+	// showUsers();
+	// std::cout << std::endl << std::endl;
 }

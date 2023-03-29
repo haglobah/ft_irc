@@ -45,5 +45,5 @@ class Channel
 
 		std::string	getActiveModes();
 		
-		void	updatePrivileges(User &u);
+		void	updatePrivileges(User const *uptr, Privileges priv);
 };
