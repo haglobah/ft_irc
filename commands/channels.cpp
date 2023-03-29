@@ -130,22 +130,25 @@ void	Server::part(User &user, Command& c)
 	for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 	{
 		string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
-		if (!isUserIn(user, it->first))
-			sendResponseServer("442", it->first + " :You're not on that channel", user);
-		else if (!c.getArgs()[1].empty()) // REMINDER: can you check it like that?
+		string channel = it->first;
+
+		if (!isUserIn(user, channel))
+			sendResponseServer("442", channel + " :You're not on that channel", user);
+		else if (c.getArgs().size() == 1)
 		{
-			getChannel(it->first)->removeUser(&user);
-			sendResponseRaw(prefix + "PART " + it->first + "\r\n", user);
-			sendToChannel(prefix + "PART " + it->first + "\r\n", *getChannel(it->first), user);
+			getChannel(channel)->removeUser(&user);
+			sendResponseRaw(prefix + "PART " + channel + "\r\n", user);
+			sendToChannel(prefix + "PART " + channel + "\r\n", *getChannel(channel), user);
 			sendResponseRaw(getRPL_list(user), user);
-			sendToChannel(getRPL_list(user), *getChannel(it->first), user);
+			sendToChannel(getRPL_list(user), *getChannel(channel), user);
 		}
 		else 
 		{
-			getChannel(it->first)->removeUser(&user);
-			sendToChannel(prefix + "PART " + it->first + " :" + c.getArgs()[1] + "\r\n", *getChannel(it->first), user);
+			string reason = c.getArgs()[1];
+			getChannel(channel)->removeUser(&user);
+			sendToChannel(prefix + "PART " + channel + " :" + reason + "\r\n", *getChannel(channel), user);
 			sendResponseRaw(getRPL_list(user), user);
-			sendToChannel(getRPL_list(user), *getChannel(it->first), user);
+			sendToChannel(getRPL_list(user), *getChannel(channel), user);
 		}
 	}
 }
@@ -210,8 +213,15 @@ void	Server::kick(User &user, Command& c)
 			sendResponseServer("441", userToKick.getNick() + " " + channelName + " :They aren't on that channel", user);
 		else
 		{
+			string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
+
 			chan.removeUser(&userToKick);
 			sendResponse("KICK " + user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + channelName, user);
+			sendResponseRaw(prefix + "KICK " + channelName + "\r\n", userToKick);
+			sendToChannel(prefix + "KICK " + channelName + "\r\n", *getChannel(channelName), user);
+			sendResponseRaw(getRPL_list(userToKick), userToKick);
+			sendToChannel(getRPL_list(user), *getChannel(channelName), user);
+			// REMINDER: Send something so that the user is not shown anymore.
 		}
 	}
 	
@@ -252,6 +262,29 @@ void Server::who(User &user, Command& c)
 				+ it->second.getName() + " * " + hostname + " " + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
 		}
 		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
+	}
+	else 
+	{
+		string mask = c.getArgs()[1];
+		if (mask[0] == '#')
+		{
+			string channelName = mask.substr(1);
+			map<User const *, Privileges> users = getChannel(channelName)->_users;
+			for (map<User const *, Privileges>::iterator it = users.begin(); it != users.end(); it++)
+			{
+				resp += hostname + "352 " + user.getNick() + " * " 
+				+ it->first->getName() + " * " + hostname + " " + it->first->getNick() + " H :0 " + it->first->getFull() + "\r\n";
+			}
+			resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
+		}
+		else
+		{
+			string otherName = c.getArgs()[1];
+			User &other = getUser(otherName);
+			resp += hostname + "352 " + user.getNick() + " * " 
+			+ other.getName() + " * " + hostname + " " + other.getNick() + " H :0 " + other.getFull() + "\r\n";
+			resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
+		}
 	}
 	sendResponseRaw(resp, user);
 }
