@@ -258,32 +258,41 @@ void Server::who(User &user, Command& c)
 	{
 		for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
 		{
-			resp += hostname + "352 " + user.getNick() + " * " 
-				+ it->second.getName() + " * " + hostname + " " + it->second.getNick() + " H :0 " + it->second.getFull() + "\r\n";
+			resp += hostname + "352 " + user.getNick() + " "
+				+ it->second.getName() + " * " + hostname + " " + it->second.getNick() + " :0 " + it->second.getFull() + "\r\n";
 		}
-		resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
+		resp += hostname + "315 " + user.getNick() + " * :End of /WHO list\r\n";
 	}
 	else 
 	{
-		string mask = c.getArgs()[1];
+		string mask = c.getArgs()[0];
+		// std::cout << "The mask: '" << mask << "'" << std::endl << std::endl;
 		if (mask[0] == '#')
 		{
-			string channelName = mask.substr(1);
-			map<User const *, Privileges> users = getChannel(channelName)->_users;
-			for (map<User const *, Privileges>::iterator it = users.begin(); it != users.end(); it++)
+			string channelName = mask;
+			vector<Channel>::iterator chan_it = getChannel(channelName);
+			if (chan_it == _channels.end())
 			{
-				resp += hostname + "352 " + user.getNick() + " * " 
-				+ it->first->getName() + " * " + hostname + " " + it->first->getNick() + " H :0 " + it->first->getFull() + "\r\n";
+				resp += hostname + "315 " + user.getNick() + " * :End of /WHO list\r\n";
 			}
-			resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
+			else
+			{
+				map<User const *, Privileges> users = chan_it->_users;
+				for (map<User const *, Privileges>::iterator it = users.begin(); it != users.end(); it++)
+				{
+					resp += hostname + "352 " + user.getNick() + " " + channelName + " "
+					+ it->first->getName() + " * " + hostname + " " + it->first->getNick() + " :0 " + it->first->getFull() + "\r\n";
+				}
+				resp += hostname + "315 " + user.getNick() + " * :End of /WHO list\r\n";
+			}
 		}
 		else
 		{
-			string otherName = c.getArgs()[1];
+			string otherName = mask;
 			User &other = getUser(otherName);
-			resp += hostname + "352 " + user.getNick() + " * " 
-			+ other.getName() + " * " + hostname + " " + other.getNick() + " H :0 " + other.getFull() + "\r\n";
-			resp += hostname + "315 " + user.getNick() + "* :End of /WHO list\r\n";
+			resp += hostname + "352 " + user.getNick() + " " + otherName + " "
+			+ other.getName() + " * " + hostname + " " + other.getNick() + " :0 " + other.getFull() + "\r\n";
+			resp += hostname + "315 " + user.getNick() + " * :End of /WHO list\r\n";
 		}
 	}
 	sendResponseRaw(resp, user);
