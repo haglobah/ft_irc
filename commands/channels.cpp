@@ -83,15 +83,11 @@ void	Server::topic(User &user, Command& c)
 	else if (c.getArgs().size() == 1)
 	{
 		vector<Channel>::iterator chan_it = getChannel(c.getArgs()[0]);
-		std::stringstream userCount;
-		userCount << chan_it->_userCount;
-		string userStr = userCount.str();
-		if (chan_it->_topic.empty())
-			sendResponseRaw(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n", user);
-		else
-		{
-			sendResponseRaw(":ft_irc.de 332 " + user.getNick() + " " + chan_it->_name + " :" + chan_it->_topic + "\r\n", user);
-		}
+		std::stringstream userCountss;
+		userCountss << chan_it->_userCount;
+		string userCount = userCountss.str();
+		string topic = (chan_it->_topic.empty()) ? "No topic is set" : chan_it->_topic;
+		sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_it->_name + " " + userCount + " :" + topic + "\r\n", user);
 	}
 	else if (c.getArgs().size() == 2)
 	{
@@ -104,15 +100,17 @@ void	Server::topic(User &user, Command& c)
 		}
 		else if (c.getArgs()[1].empty())
 		{
-			sendResponseRaw(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n", user);
-			sendToChannel(":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n", *chan_it , user);
+			string msg = ":ft_irc.de 331 " + user.getNick() + " " + chan_it->_name + " :No topic is set\r\n";
+			sendResponseRaw(msg, user);
+			sendToChannel(msg, *chan_it , user);
 			chan_it->_topic.clear();
 		}
 		else
 		{
 			chan_it->_topic = c.getArgs()[1];
-			sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname + " TOPIC " + chan_it->_name + " :" + chan_it->_topic + "\r\n", user);
-			sendToChannel(":" + user.getNick() + "!" + user.getName() + "@" + hostname + " TOPIC " + chan_it->_name + " :" + chan_it->_topic + "\r\n", *chan_it, user);
+			string msg = ":" + user.getNick() + "!" + user.getName() + "@" + hostname + " TOPIC " + chan_it->_name + " :" + chan_it->_topic + "\r\n";
+			sendResponseRaw(msg, user);
+			sendToChannel(msg, *chan_it, user);
 		}
 	}
 }
@@ -161,15 +159,15 @@ void	Server::list(User &user, Command& c)
 		chan_keys = parseChannels(user, c.getArgs()[0]);
 		for (map<string, string>::iterator it = chan_keys.begin(); it != chan_keys.end(); it++)
 		{
-			vector<Channel>::iterator chan_It = getChannel(it->first);
-			if (chan_It == _channels.end())
+			vector<Channel>::iterator chan_it = getChannel(it->first);
+			if (chan_it == _channels.end())
 				;
 			else
 			{
-				userCountss << chan_It->_userCount;
+				userCountss << chan_it->_userCount;
 				string userCount = userCountss.str();
-				string topic = (chan_It->_topic.empty()) ? "No topic is set" : chan_It->_topic;
-				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_It->_name + " " + userCount + " :" + topic + "\r\n", user);
+				string topic = (chan_it->_topic.empty()) ? "No topic is set" : chan_it->_topic;
+				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_it->_name + " " + userCount + " :" + topic + "\r\n", user);
 			}
 		}
 		sendResponseRaw(hostname + "323 " + user.getNick() + " End of /LIST\r\n", user);
