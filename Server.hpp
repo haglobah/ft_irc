@@ -89,7 +89,7 @@ class Server
 		User&	getUser(string);
 		bool	isUserIn(User&, string);
 		bool	isUserRegistered(string);
-		string	getChannelNames(User);
+		string	getChannelNames(User&);
 		vector<string>	parseChannelPRIVMSG(User&, string);
 		
 	private:

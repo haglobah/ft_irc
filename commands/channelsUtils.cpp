@@ -90,19 +90,24 @@ User& Server::getUser(string name)
 }
 
 
-string	Server::getChannelNames(User user)
+string	Server::getChannelNames(User &user)
 {
 	string channels;
 
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
-		std::stringstream userCount;
-		userCount << it->_userCount;
-		string userStr = userCount.str();
-		if (it->_topic.empty())
-			channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :No topic is set\r\n";
+		if (!isUserIn(user, it->_name))
+			continue;
 		else
-			channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :" + it->_topic + "\r\n";
+		{
+			std::stringstream userCount;
+			userCount << it->_userCount;
+			string userStr = userCount.str();
+			if (it->_topic.empty())
+				channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :No topic is set\r\n";
+			else
+				channels += ":ft_irc.de 322 " + user.getNick() + " " + it->_name + " " + userStr + " :" + it->_topic + "\r\n";
+		}
 	}
 	return (channels);
 }

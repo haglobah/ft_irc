@@ -134,19 +134,12 @@ void	Server::part(User &user, Command& c)
 
 		if (!isUserIn(user, channel))
 			sendResponseServer("442", channel + " :You're not on that channel", user);
-		else if (c.getArgs().size() == 1)
-		{
-			getChannel(channel)->removeUser(&user);
-			sendResponseRaw(prefix + "PART " + channel + "\r\n", user);
-			sendToChannel(prefix + "PART " + channel + "\r\n", *getChannel(channel), user);
-			sendResponseRaw(getRPL_list(user), user);
-			sendToChannel(getRPL_list(user), *getChannel(channel), user);
-		}
 		else 
 		{
-			string reason = c.getArgs()[1];
+			string reason = (c.getArgs().size() == 1) ? "" : " :" + c.getArgs()[1];
 			getChannel(channel)->removeUser(&user);
-			sendToChannel(prefix + "PART " + channel + " :" + reason + "\r\n", *getChannel(channel), user);
+			sendResponseRaw(prefix + "PART " + channel + "\r\n", user);
+			sendToChannel(prefix + "PART " + channel + reason + "\r\n", *getChannel(channel), user);
 			sendResponseRaw(getRPL_list(user), user);
 			sendToChannel(getRPL_list(user), *getChannel(channel), user);
 		}
