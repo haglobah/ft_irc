@@ -47,7 +47,7 @@ void	Channel::showUsers()
 
 string	Channel::getActiveModes(void)
 {
-	return ("n None\n");
+	return ("n None");
 }
 
 void	Channel::updatePrivileges(User const *uptr, Privileges priv)

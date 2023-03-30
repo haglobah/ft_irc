@@ -3,6 +3,7 @@
 using std::string;
 using std::vector;
 using std::map;
+using std::endl;
 
 namespace {
 	const string hostname = ":ft_irc.de";
@@ -13,7 +14,7 @@ void	Server::sendResponseServer(string numeric_reply, string message, User& user
 	string response;
 
 	response = hostname + " " + numeric_reply + " " + user.getNick() + " " + message + "\r\n";
-	std::cout << "Response to send is|" << response << "| to: " << user.getNick() << std::endl;
+	std::cout << "Response to send is \n|" << response << "| to: " << user.getNick() << endl << endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
 	if (user.isDisconnected())
@@ -25,7 +26,7 @@ void	Server::sendResponse(string message, User& user)
 	string response;
 
 	response = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " " + message + "\r\n";
-	std::cout << "Response to send is|" << response << "| to: " << user.getNick() << std::endl;
+	std::cout << "Response to send is \n|" << response << "| to: " << user.getNick() << std::endl << endl;
 	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 	if (user.isDisconnected())
@@ -34,14 +35,14 @@ void	Server::sendResponse(string message, User& user)
 
 void	Server::sendResponseRaw(string message, User& user)
 {
-	std::cout << "Response to send is|" << message << "| to: " << user.getNick() << std::endl;
+	std::cout << "Response to send is \n|" << message << "| to: " << user.getNick() << std::endl << endl;
 	if (send(user.getFD(), message.c_str(), message.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
 }
 
 void	Server::sendToChannel(string message, Channel c, User user)
 { 
-	std::cout << "Message to the channel is|" << message << "| to: " << c._name << std::endl;
+	std::cout << "Message to the channel is \n|" << message << "| to: " << c._name << std::endl << endl;
 	for(map<const User *, Privileges>::iterator it = c._users.begin();
 		it != c._users.end();
 		it++)
