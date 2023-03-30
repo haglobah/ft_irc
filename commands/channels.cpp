@@ -155,7 +155,7 @@ void	Server::part(User &user, Command& c)
 
 void	Server::list(User &user, Command& c)
 {
-	std::stringstream userCount;
+	std::stringstream userCountss;
 
 	if (c.getArgs().size() > 1)
 		sendResponseServer("461", "LIST :Not enough parameters", user);
@@ -171,17 +171,12 @@ void	Server::list(User &user, Command& c)
 			vector<Channel>::iterator chan_It = getChannel(it->first);
 			if (chan_It == _channels.end())
 				;
-			else if (chan_It->_topic.empty())
-			{
-				userCount << chan_It->_userCount;
-				string userStr = userCount.str();
-				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_It->_name + " " + userStr + " :No topic is set\r\n", user);
-			}
 			else
 			{
-				userCount << chan_It->_userCount;
-				string userStr = userCount.str();
-				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_It->_name + " " + userStr + " :" + chan_It->_topic + "\r\n", user);
+				userCountss << chan_It->_userCount;
+				string userCount = userCountss.str();
+				string topic = (chan_It->_topic.empty()) ? "No topic is set" : chan_It->_topic;
+				sendResponseRaw(hostname + "322 " + user.getNick() + " " + chan_It->_name + " " + userCount + " :" + topic + "\r\n", user);
 			}
 		}
 		sendResponseRaw(hostname + "323 " + user.getNick() + " End of /LIST\r\n", user);
