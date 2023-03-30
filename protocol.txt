@@ -1,0 +1,264 @@
+
+// KICK
+Command is: |KICK|[ #test paul ]
+Response to send is|:beat!Beat@ft_irc.de KICK beat has kicked paul from channel #test
+| to: beat
+Response to send is|:beat!Beat@:ft_irc.de KICK #test
+| to: paul
+Message to the channel is|:beat!Beat@:ft_irc.de KICK #test
+| to: #test
+Response to send is|:ft_irc.de 321 paul Channel :Users Name
+:ft_irc.de 322 paul #test 2 :No topic is set
+:ft_irc.de 323 paul End of /LIST
+| to: paul
+Message to the channel is|:ft_irc.de 321 beat Channel :Users Name
+:ft_irc.de 322 beat #test 2 :No topic is set
+:ft_irc.de 323 beat End of /LIST
+| to: #test
+
+// PART
+Command is: |PART|[ #test No boundaries on the net! ]
+Message to the channel is|:max!Max@:ft_irc.de PART #test :No boundaries on the net!
+| to: #test
+Response to send is|:ft_irc.de 321 max Channel :Users Name
+:ft_irc.de 322 max #test 1 :No topic is set
+:ft_irc.de 323 max End of /LIST
+| to: max
+Message to the channel is|:ft_irc.de 321 max Channel :Users Name
+:ft_irc.de 322 max #test 1 :No topic is set
+:ft_irc.de 323 max End of /LIST
+| to: #test
+
+// AS IT SHOULD BE
+port: 42
+pass: password
+Listening on: 3
+User hostmask: 127.0.0.1
+User connected on fd: 4
+Client connected
+Going to execute: |CAP LS|
+|CAP * LS :End of CAP LS negotiation
+| was successfully sent to *
+
+Going to execute: |PING :localhost|
+|PONG :localhost
+| was successfully sent to *
+
+Going to execute: |CAP END|
+Going to execute: |PASS :password|
+Going to execute: |NICK paul|
+|:*!* NICK paul
+| was successfully sent to *
+
+Going to execute: |USER Paul 0 localhost :1,8Ge|
+|:42irc.com 001 paul :Welcome to our irc server paul
+:42irc.com 321 paul Channel :Users Name
+:42irc.com 323 paul :End of /LIST
+| was successfully sent to paul
+
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+User hostmask: 127.0.0.1
+User connected on fd: 5
+Client connected
+Going to execute: |CAP LS|
+|CAP * LS :End of CAP LS negotiation
+| was successfully sent to *
+
+Going to execute: |PING :localhost|
+|PONG :localhost
+| was successfully sent to *
+
+Going to execute: |CAP END|
+Going to execute: |PASS :password|
+Going to execute: |NICK max|
+|:*!* NICK max
+| was successfully sent to *
+
+Going to execute: |USER Max 0 localhost :1,8He|
+|:42irc.com 001 max :Welcome to our irc server max
+:42irc.com 321 max Channel :Users Name
+:42irc.com 323 max :End of /LIST
+| was successfully sent to max
+
+Going to execute: |PING max localhost|
+|PONG :max
+| was successfully sent to max
+
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+Going to execute: |JOIN #test|
+|:42irc.com 321 paul Channel :Users Name
+:42irc.com 322 paul #test 1 :No topic is set
+:42irc.com 323 paul :End of /LIST
+| was successfully sent to paul
+
+|:max!Max@ JOIN :#test
+:42irc.com 332 max #test :No topic is set
+:42irc.com 353 max = #test :@max
+:42irc.com 366 max #test :End of /NAMES list
+:42irc.com 321 max Channel :Users Name
+:42irc.com 322 max #test 1 :No topic is set
+:42irc.com 323 max :End of /LIST
+| was successfully sent to max
+
+Going to execute: |MODE #test|
+|:42irc.com 324 max #test +
+| was successfully sent to max
+
+Going to execute: |WHO #test|
+|:42irc.com 315 max #test :End of /WHO list
+| was successfully sent to max
+
+Going to execute: |MODE #test b|
+|:42irc.com 368 max #test :End of Channel Ban List
+| was successfully sent to max
+
+Going to execute: |PRIVMSG #test :lala|
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+Going to execute: |PING max localhost|
+|PONG :max
+| was successfully sent to max
+
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+Going to execute: |PING max localhost|
+|PONG :max
+| was successfully sent to max
+
+Going to execute: |PART #test :No boundaries on the net!|
+|:42irc.com 321 paul Channel :Users Name
+:42irc.com 323 paul :End of /LIST
+| was successfully sent to paul
+
+|:max!Max@ PART #test :No boundaries on the net!
+:42irc.com 321 max Channel :Users Name
+:42irc.com 323 max :End of /LIST
+| was successfully sent to max
+
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+Going to execute: |PING max localhost|
+|PONG :max
+| was successfully sent to max
+
+Going to execute: |JOIN #la|
+|:paul!Paul@ JOIN :#la
+:42irc.com 332 paul #la :No topic is set
+:42irc.com 353 paul = #la :@paul
+:42irc.com 366 paul #la :End of /NAMES list
+:42irc.com 321 paul Channel :Users Name
+:42irc.com 322 paul #la 1 :No topic is set
+:42irc.com 323 paul :End of /LIST
+| was successfully sent to paul
+
+|:42irc.com 321 max Channel :Users Name
+:42irc.com 322 max #la 1 :No topic is set
+:42irc.com 323 max :End of /LIST
+| was successfully sent to max
+
+Going to execute: |MODE #la|
+|:42irc.com 324 paul #la +
+| was successfully sent to paul
+
+Going to execute: |PRIVMSG #la :lala|
+Going to execute: |WHO #la|
+|:42irc.com 315 paul #la :End of /WHO list
+| was successfully sent to paul
+
+Going to execute: |MODE #la b|
+|:42irc.com 368 paul #la :End of Channel Ban List
+| was successfully sent to paul
+
+Going to execute: |JOIN #la|
+|:max!Max@ JOIN :#la
+:42irc.com 321 paul Channel :Users Name
+:42irc.com 322 paul #la 2 :No topic is set
+:42irc.com 323 paul :End of /LIST
+| was successfully sent to paul
+
+|:max!Max@ JOIN :#la
+:42irc.com 332 max #la :No topic is set
+:42irc.com 353 max = #la :@paul max
+:42irc.com 366 max #la :End of /NAMES list
+:42irc.com 321 max Channel :Users Name
+:42irc.com 322 max #la 2 :No topic is set
+:42irc.com 323 max :End of /LIST
+| was successfully sent to max
+
+Going to execute: |MODE #la|
+|:42irc.com 324 max #la +
+| was successfully sent to max
+
+Going to execute: |WHO #la|
+|:42irc.com 352 max #la Paul * 42irc.com paul :0 1,8Ge
+:42irc.com 315 max #la :End of /WHO list
+| was successfully sent to max
+
+Going to execute: |PRIVMSG #la :rrst|
+|:max!Max PRIVMSG #la :rrst
+| was successfully sent to paul
+
+Going to execute: |MODE #la b|
+|:42irc.com 368 max #la :End of Channel Ban List
+| was successfully sent to max
+
+Going to execute: |PRIVMSG #la :rs|
+|:max!Max PRIVMSG #la :rs
+| was successfully sent to paul
+
+Going to execute: |PRIVMSG #la :rtrt|
+|:paul!Paul PRIVMSG #la :rtrt
+| was successfully sent to max
+
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+Going to execute: |PING max localhost|
+|PONG :max
+| was successfully sent to max
+
+Going to execute: |KICK #la #la|
+|:42irc.com 441 paul #la #la :They aren't on that channel
+| was successfully sent to paul
+
+Going to execute: |KICK #la paul|
+|:paul!Paul@ KICK #la paul
+:42irc.com 321 paul Channel :Users Name
+:42irc.com 322 paul #la 1 :No topic is set
+:42irc.com 323 paul :End of /LIST
+| was successfully sent to paul
+
+|:paul!Paul@ KICK #la paul
+:42irc.com 321 max Channel :Users Name
+:42irc.com 322 max #la 1 :No topic is set
+:42irc.com 323 max :End of /LIST
+| was successfully sent to max
+
+Going to execute: |PRIVMSG #la :lala|
+Going to execute: |PING paul localhost|
+|PONG :paul
+| was successfully sent to paul
+
+Going to execute: |QUIT :KVIrc 5.0.0 Aria http://www.kvirc.net/|
+|:paul!Paul QUIT :KVIrc 5.0.0 Aria http://www.kvirc.net/
+| was successfully sent to paul
+
+paul QUIT THE SERVER
+Going to execute: |QUIT :KVIrc 5.0.0 Aria http://www.kvirc.net/|
+|:max!Max QUIT :KVIrc 5.0.0 Aria http://www.kvirc.net/
+| was successfully sent to max
+
+max QUIT THE SERVER

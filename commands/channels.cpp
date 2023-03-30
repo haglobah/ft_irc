@@ -343,11 +343,10 @@ void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 		chan.updatePrivileges(&user, VOICE_PRIO);
 		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o", user);
 	}
-	// else if (modestring == "+b")
-	// {
-	// 	chan.updatePrivileges(&user, VOICE_PRIO);
-	// 	sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "-o", user);
-	// }
+	else if (modestring == "b")
+	{
+		sendResponseServer("368", chan._name + " :End of Channel Ban List", user);
+	}
 	// else if (modestring == "-o")
 	// {
 	// 	chan.updatePrivileges(&user, VOICE_PRIO);
