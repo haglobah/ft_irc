@@ -90,15 +90,13 @@ User& Server::getUser(string name)
 }
 
 
-string	Server::getChannelNames(User &user)
+string	Server::getChannelNames(User &user, bool letUserSeeThemselves)
 {
 	string channels;
 
 	for (vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
-		if (!isUserIn(user, it->_name))
-			continue;
-		else
+		if (letUserSeeThemselves || isUserIn(user, it->_name))
 		{
 			std::stringstream userCount;
 			userCount << it->_userCount;

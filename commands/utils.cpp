@@ -53,12 +53,12 @@ bool Server::isUserIn(User &u, string name)
 	return (false);
 }
 
-std::string	Server::getRPL_list(User &u)
+std::string	Server::getRPL_list(User &u, bool letUserSeeThemselves)
 {
 	std::string RPL_list;
 
 	RPL_list = hostname + " 321 " + u.getNick() + " Channel :Users Name\r\n";
-	RPL_list += getChannelNames(u);
+	RPL_list += getChannelNames(u, letUserSeeThemselves);
 	RPL_list += hostname + " 323 " + u.getNick() + " End of /LIST\r\n";
 	return (RPL_list);
 }

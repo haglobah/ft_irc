@@ -200,14 +200,15 @@ void	Server::kick(User &user, Command& c)
 		else
 		{
 			string prefix = ":" + user.getNick() + "!" + user.getName() + "@" + hostname;
+			string msg = "KICK " + channelName + " " + userToKick.getNick() + "\r\n";
 
 			chan.removeUser(&userToKick);
-			sendResponse("KICK " + user.getNick() + " has kicked " + userToKick.getNick() + " from channel " + channelName, user);
-			sendResponseRaw(prefix + "KICK " + channelName + "\r\n", userToKick);
-			sendToChannel(prefix + "KICK " + channelName + "\r\n", *getChannel(channelName), user);
-			sendResponseRaw(getRPL_list(userToKick), userToKick);
-			sendToChannel(getRPL_list(user), *getChannel(channelName), user);
-			// REMINDER: Send something so that the user is not shown anymore.
+			sendResponseRaw(prefix + msg + getRPL_list(userToKick, true), userToKick);
+			for (std::map<User const *, Privileges>::iterator user_it = chan._users.begin(); user_it != chan._users.end(); user_it++)
+			{
+				User curr_user = *user_it->first; 
+				sendResponseRaw(prefix + msg + getRPL_list(curr_user, true), curr_user);
+			}
 		}
 	}
 	
