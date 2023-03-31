@@ -23,7 +23,7 @@ void	Channel::addUser(User const *uptr)
 {
 	// showUsers(); // REMINDER: remove before submitting
 	_users.insert(std::pair<User const *, Privileges>(uptr, VOICE_PRIO));
-	_userCount++;
+	_userCount = _users.size();
 	// showUsers(); // REMINDER: remove before submitting
 }
 
@@ -32,7 +32,7 @@ void	Channel::removeUser(User const *uptr)
 	// std::cout << "Show users before removing: " << uptr->getNick() << std::endl; // REMINDER: remove before submitting
 	// showUsers(); // REMINDER: remove before submitting
 	_users.erase(uptr);
-	_userCount--;
+	_userCount = _users.size();
 	// std::cout << "Show users after removing: " << uptr->getNick() << std::endl; // REMINDER: remove before submitting
 	// showUsers(); // REMINDER: remove before submitting
 }
