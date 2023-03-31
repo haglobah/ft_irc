@@ -334,7 +334,13 @@ void	Server::userMode(string userNick, User &user, Command& c)
 void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 {
 	string modestring = c.getArgs()[1];
+	string modifier = modestring.substr(0, 1); 
 	
+	if (chan._users[&user] != OPERATOR && (contains(modifier, "-+")))
+	{
+		// "<client> <channel> :You're not channel operator"
+		sendResponseServer("482", chan._name + " :You're not channel operator", user);
+	}
 	if (modestring == "+o")
 	{
 		chan.updatePrivileges(&user, OPERATOR);
@@ -349,11 +355,6 @@ void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 	{
 		sendResponseServer("368", chan._name + " :End of Channel Ban List", user);
 	}
-	// else if (modestring == "-o")
-	// {
-	// 	chan.updatePrivileges(&user, VOICE_PRIO);
-	// 	sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + "-o", user);
-	// }
 	else
 	{
 		sendResponseServer("501", " :Unknown MODE flag", user);
@@ -372,7 +373,7 @@ void	Server::channelMode(string channelName, User &user, Command& c)
 			string channelModes = chan_it->getActiveModes();
 			sendResponseServer("221", " :These are our modes " + channelModes, user);
 		}
-		else 
+		else
 		{
 			changeUserMode(*chan_it, user, c);
 		}
