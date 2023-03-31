@@ -46,6 +46,7 @@ void	Server::joinChannel(map<string, string>::iterator chan_key, User &user)
 	}
 	_channels.push_back(Channel(chan_key->first));
 	addUser(_channels.end() - 1, user);
+	(_channels.end() - 1)->updatePrivileges(&user, OPERATOR);	
 }
 
 void	Server::join(User &user, Command& c)
