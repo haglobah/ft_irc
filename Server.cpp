@@ -63,17 +63,12 @@ string	getCommand(string& acc, char *buf)
 			if (acc[i] == '\0')
 				break ;
 		}
-		cout << "'" << acc << "'" << endl;
 		acc.erase(i, i + 1);
-		cout << "'" << acc << "'" << endl;
-		cout << "here" << endl;
 		return ("");
 	}
 	cmd = acc.substr(0, newline);
-	cout << "'" << acc << "'" << endl;
 	acc.erase(0, newline + 1);
 	memset(buf, 0, 8912);
-	cout << "'" << acc << "'" << endl;
 	return (cmd);
 }
 
@@ -131,15 +126,10 @@ void	Server::receiveInput(int fd)
 	std::string acc;
 	int		received;
 
-	cout << "receive input\n";
-	// cout << "buf before receive: '" << buf << "'" << endl;
 	if (buf[0] != '\0')
 		acc.append(buf);
-	// cout << "acc before memset: '" << acc << "'" << endl;
 	memset(buf, 0, 8192);
-	// cout << "acc after memset: '" << acc << "'" << endl;
 	received = recv(fd, buf, 8192, 0);
-	// cout << "buf after recv: '" << buf << "'" << endl;
 	if (received == -1)
 		throw readingMsgFailed();
 	else if (received == 0)
@@ -148,7 +138,6 @@ void	Server::receiveInput(int fd)
 	{
 		acc.append(buf);
 		processCommands(acc, buf, fd);
-		// acc.clear();
 	}
 }
 
