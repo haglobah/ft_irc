@@ -40,23 +40,40 @@ void Server::run(void)
 	_listeningSocket = setupSocket(_port);
 	setupPoll(_listeningSocket);
 	while (!_stop)
-	{ 
+	{
 		loop();
 	}
 	close(_listeningSocket);
 }
 
 
-string	getCommand(string& buf)
+string	getCommand(string& acc, char *buf)
 {
 	string cmd;
-	size_t newLine;
-	
-	while (buf.find("\r\n") != std::string::npos)
-		buf.replace(buf.find("\r\n"), 2, "\n");
-	newLine = buf.find('\n');
-	cmd = buf.substr(0, newLine);
-	buf.erase(0, newLine + 1);
+	size_t newline;
+
+	while (acc.find("\r\n") != std::string::npos)
+		acc.replace(acc.find("\r\n"), 2, "\n");
+	newline = acc.find("\n");
+	if (newline == std::string::npos)
+	{
+		int i = -1;
+		while (acc[++i] != EOF)
+		{
+			if (acc[i] == '\0')
+				break ;
+		}
+		cout << "'" << acc << "'" << endl;
+		acc.erase(i, i + 1);
+		cout << "'" << acc << "'" << endl;
+		cout << "here" << endl;
+		return ("");
+	}
+	cmd = acc.substr(0, newline);
+	cout << "'" << acc << "'" << endl;
+	acc.erase(0, newline + 1);
+	memset(buf, 0, 8912);
+	cout << "'" << acc << "'" << endl;
 	return (cmd);
 }
 
@@ -93,14 +110,14 @@ void	Server::executeCommand(User &u, Command& c)
 	else { sendResponseServer("421", cmd + " :" + cmd, u); } // WORKS
 }
 
-void	Server::processCommands(string buf, int fd)
+void	Server::processCommands(string &acc, char *buf, int fd)
 {
 	User	&user = _users.find(fd)->second;
 	string	cmd;
 
 	while(1)
 	{
-		cmd = getCommand(buf);
+		cmd = getCommand(acc, buf);
 		if (cmd.empty())
 			break;
 		Command c(cmd);
@@ -110,19 +127,29 @@ void	Server::processCommands(string buf, int fd)
 
 void	Server::receiveInput(int fd)
 {
-	char	buf[8192];
+	char	buf[8912];
+	std::string acc;
 	int		received;
 
+	cout << "receive input\n";
+	// cout << "buf before receive: '" << buf << "'" << endl;
+	if (buf[0] != '\0')
+		acc.append(buf);
+	// cout << "acc before memset: '" << acc << "'" << endl;
 	memset(buf, 0, 8192);
+	// cout << "acc after memset: '" << acc << "'" << endl;
 	received = recv(fd, buf, 8192, 0);
-	if (received == -1 || received == 0)
-	{
-		if (received == 0)
-			removeConnection(fd);
+	// cout << "buf after recv: '" << buf << "'" << endl;
+	if (received == -1)
 		throw readingMsgFailed();
-	}
+	else if (received == 0)
+		removeConnection(fd);
 	else
-		processCommands(buf, fd);
+	{
+		acc.append(buf);
+		processCommands(acc, buf, fd);
+		// acc.clear();
+	}
 }
 
 void	Server::disconnectUser(User &u)
@@ -159,7 +186,7 @@ void	Server::acceptUser()
 	addConnection(clientSocket);
 	_users.insert(pair<int, User>(clientSocket, User(clientSocket, host)));
 	cout << "Accept was successful!" << endl;
-    cout << "Hostmask: " << host << " hostname Socket: " << clientSocket << " hostname added!" << endl;
+    cout << "Hostmask: " << host << " Socket: " << clientSocket << " added!" << endl;
 }
 
 void Server::loop()

@@ -30,7 +30,7 @@ class Server
 		int		addConnection(int);
 		int		removeConnection(int);
 		void	executeCommand(User &, Command&);
-		void	processCommands(string, int);
+		void	processCommands(string &, char *, int);
 		void	receiveInput(int);
 		void	acceptUser();
 		void	disconnectUser(User &u);
