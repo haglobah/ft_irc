@@ -31,6 +31,7 @@ Server::Server(int argc, char **argv){
 	//REMINDER: Do we need this?
 	_operpass  = "operpass";
 	_stop = false;
+	_is_first = false;
 }
 
 Server::~Server(){}
@@ -124,14 +125,13 @@ void	Server::processCommands(string &acc, char *buf, int fd)
 void	Server::receiveInput(int fd)
 {
 	char	buf[8912];
-	bool	is_first = true;
 	std::string acc;
 	int		received;
  
-	if (is_first)
+	if (_is_first)
 	{
 		memset(buf, 0, 8192);
-		is_first = false;
+		_is_first = false;
 	}
 	if (buf[0] != '\0')
 		acc.append(buf);
