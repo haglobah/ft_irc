@@ -9,6 +9,9 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
 #include "errors.hpp"
 #include "Channel.hpp"
 #include "Command.hpp"

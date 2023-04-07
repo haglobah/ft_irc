@@ -12,7 +12,7 @@ string parsePassword(string password)
 {
 	string ret;
 
-	if (password.front() == ':')
+	if (password[0] == ':')
 		password = password.substr(1);
 	return (password);
 }

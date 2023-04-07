@@ -9,7 +9,7 @@ SOCKET	createSocket()
 	int		optVal = 1;
 	int		optValSize = sizeof(optVal);
 
-	if (setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optValSize) == -1 
+	if (setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, (const char*)&optVal, optValSize) == -1
 	||	setsockopt(socketFD, SOL_SOCKET, SO_NOSIGPIPE, (const char*)&optVal, optValSize) == -1)
 		throw socketCreationFailed();
 	fcntl(socketFD, F_SETFL, O_NONBLOCK);
