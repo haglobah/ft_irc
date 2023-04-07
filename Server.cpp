@@ -182,7 +182,6 @@ void	Server::acceptUser()
 	addConnection(clientSocket);
 	_users.insert(pair<int, User>(clientSocket, User(clientSocket, host)));
 	cout << "Accept was successful!" << endl;
-    cout << "Hostmask: " << host << " Socket: " << clientSocket << " added!" << endl;
 }
 
 void Server::loop()

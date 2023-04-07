@@ -6,7 +6,7 @@ User::User(int fd, std::string hostmask): _nick(""),
 										  _hostmask(hostmask),
 										  _userFd(fd), 
 										  _isRegistered(false) , 
-										  _allowConnection(true) , 
+										  _allowConnection(false) , 
 										  _isDisconnected(0), 
 										  _isOper(false){}
 
