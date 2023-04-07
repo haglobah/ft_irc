@@ -100,6 +100,7 @@ class Server
 		nfds_t 			_activeUsers;
 		int				_activePoll;
 		bool			_stop;
+		bool			_is_first;
 		int 			_listeningSocket;
 		map<int, User>	_users;
 		vector<Channel>	_channels;
