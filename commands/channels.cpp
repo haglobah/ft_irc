@@ -343,13 +343,27 @@ void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 	}
 	if (modestring == "+o")
 	{
-		chan.updatePrivileges(&user, OPERATOR);
-		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " +o", user);
+		if (c.getArgs().size() != 3)
+			sendResponseServer("461", "MODE :Not enough parameters", user);
+		else
+		{
+			string userNick = c.getArgs()[2];
+			User &userToChange = getUser(userNick);
+			chan.updatePrivileges(&userToChange, OPERATOR);
+			sendToChannel(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + chan._name + " +o " + userNick, chan, user);
+		}
 	}
 	else if (modestring == "-o")
 	{
-		chan.updatePrivileges(&user, VOICE_PRIO);
-		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o", user);
+		if (c.getArgs().size() != 3)
+			sendResponseServer("461", "MODE :Not enough parameters", user);
+		else
+		{
+			string userNick = c.getArgs()[2];
+			User &userToChange = getUser(userNick);
+			chan.updatePrivileges(&userToChange, VOICE_PRIO);
+			sendToChannel(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + chan._name + " -o " + userNick, chan, user);
+		}
 	}
 	else if (modestring == "b")
 	{
