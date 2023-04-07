@@ -298,12 +298,12 @@ void	Server::applyUserModes(User &user, Command& c)
 	if (modestring == "+o")
 	{
 		user.setOper(true);
-		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " +o", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + "MODE " + c.getArgs()[0] + " +o\r\n", user);
 	}
 	else if (modestring == "-o")
 	{
 		user.setOper(false);
-		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + "MODE " + c.getArgs()[0] + " -o\r\n", user);
 	}
 	else
 	{
@@ -344,12 +344,12 @@ void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 	if (modestring == "+o")
 	{
 		chan.updatePrivileges(&user, OPERATOR);
-		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " +o", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " +o\r\n", user);
 	}
 	else if (modestring == "-o")
 	{
 		chan.updatePrivileges(&user, VOICE_PRIO);
-		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " MODE " + c.getArgs()[0] + " -o\r\n", user);
 	}
 	else if (modestring == "b")
 	{
