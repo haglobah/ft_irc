@@ -139,8 +139,8 @@ void	Server::part(User &user, Command& c)
 			getChannel(channel)->removeUser(&user);
 			sendResponseRaw(prefix + "PART " + channel + "\r\n", user);
 			sendToChannel(prefix + "PART " + channel + reason + "\r\n", *getChannel(channel), user);
-			sendResponseRaw(getRPL_list(user), user);
-			sendToChannel(getRPL_list(user), *getChannel(channel), user);
+			sendResponseRaw(getRPL_list(user, true), user);
+			sendToChannel(getRPL_list(user, true), *getChannel(channel), user);
 		}
 	}
 }
