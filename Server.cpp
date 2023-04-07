@@ -103,6 +103,7 @@ void	Server::executeCommand(User &u, Command& c)
 	else if (cmd == "NOTICE") { notice(u, c); } // WORKS
 	else if (cmd == "WHO") { who(u, c); } // WORKS WITH ZERO PARAMS
 	else { sendResponseServer("421", cmd + " :" + cmd, u); } // WORKS
+	// else { exit(1); }
 }
 
 void	Server::processCommands(string &acc, char *buf, int fd)
@@ -157,14 +158,14 @@ void	Server::disconnectUser(User &u)
 			it->removeUser(&u);
 			sendToChannel(":" + u.getNick() + "!" + u.getName() + "@" + hostname.substr(1) + " QUIT " + it->_name + "\r\n", *it, u);
 			sendToChannel(getRPL_list(u), *it, u);
-			sendResponseRaw(getRPL_list(u), u);
+			// sendResponseRaw(getRPL_list(u), u);
 		}
-		if (it->_userCount == 0)
-			removeChannel(it);
+		// if (it->_userCount == 0)
+		// 	removeChannel(it);
 	}
 	removeConnection(u.getFD());
-	_users.erase(u.getFD());
 	close(u.getFD());
+	_users.erase(u.getFD());
 }
 
 void	Server::acceptUser()

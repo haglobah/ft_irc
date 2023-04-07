@@ -38,6 +38,8 @@ void	Server::sendResponseRaw(string message, User& user)
 	std::cout << "Response to send is \n|" << message << "| to: " << user.getNick() << std::endl << endl;
 	if (send(user.getFD(), message.c_str(), message.length(), 0) == -1)
 		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
+	if (user.isDisconnected())
+		disconnectUser(user);
 }
 
 void	Server::sendToChannel(string message, Channel c, User user)
