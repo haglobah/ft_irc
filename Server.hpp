@@ -64,6 +64,7 @@ class Server
 		void						registrate(User&);
 		void						removeChannel(vector<Channel>::iterator);
 		void						applyUserModes(User&, Command&);
+		void						sendApply(Channel &chan, User &user, Command& c, string &modestring);
 		void						changeUserMode(Channel &, User&, Command&);
 		string						getUserModes(void);
 		// string					getChannelModes(string);

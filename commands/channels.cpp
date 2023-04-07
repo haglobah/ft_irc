@@ -331,6 +331,25 @@ void	Server::userMode(string userNick, User &user, Command& c)
 	}
 }
 
+void	Server::sendApply(Channel &chan, User &user, Command& c, string &modestring)
+{
+	if (c.getArgs().size() != 3)
+		sendResponseServer("461", "MODE :Not enough parameters", user);
+	else
+	{
+		string userNick = c.getArgs()[2];
+		User &userToChange = getUser(userNick);
+		if (modestring == "+o")
+			chan.updatePrivileges(&userToChange, OPERATOR);
+		else
+			chan.updatePrivileges(&userToChange, VOICE_PRIO);
+		string msg = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) 
+			+ "MODE " + chan._name + " " + modestring + " " + userNick + "\r\n";
+		sendResponseRaw(msg, userToChange);
+		sendToChannel(msg, chan, user);
+	}
+}
+
 void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 {
 	string modestring = c.getArgs()[1];
@@ -341,29 +360,9 @@ void	Server::changeUserMode(Channel &chan, User &user, Command& c)
 		// "<client> <channel> :You're not channel operator"
 		sendResponseServer("482", chan._name + " :You're not channel operator", user);
 	}
-	if (modestring == "+o")
+	if (modestring == "+o" || modestring == "-o")
 	{
-		if (c.getArgs().size() != 3)
-			sendResponseServer("461", "MODE :Not enough parameters", user);
-		else
-		{
-			string userNick = c.getArgs()[2];
-			User &userToChange = getUser(userNick);
-			chan.updatePrivileges(&userToChange, OPERATOR);
-			sendToChannel(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + "MODE " + chan._name + " +o " + userNick + "\r\n", chan, user);
-		}
-	}
-	else if (modestring == "-o")
-	{
-		if (c.getArgs().size() != 3)
-			sendResponseServer("461", "MODE :Not enough parameters", user);
-		else
-		{
-			string userNick = c.getArgs()[2];
-			User &userToChange = getUser(userNick);
-			chan.updatePrivileges(&userToChange, VOICE_PRIO);
-			sendToChannel(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + "MODE " + chan._name + " -o " + userNick + "\r\n", chan, user);
-		}
+		sendApply(chan, user, c, modestring);
 	}
 	else if (modestring == "b")
 	{
