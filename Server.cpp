@@ -31,7 +31,7 @@ Server::Server(int argc, char **argv){
 	//REMINDER: Do we need this?
 	_operpass  = "operpass";
 	_stop = false;
-	_is_first = false;
+	_is_first = true;
 }
 
 Server::~Server(){}
