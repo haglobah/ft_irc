@@ -57,9 +57,9 @@ void	Server::executeCommand(User &u, Command& c)
 	if 		(cmd == "PASS") { pass(u, c); } // WORKS
 	else if (cmd == "CAP") { cap(u, c); } // WORKS
 	else if (cmd == "PING") { ping(u, c); } // WORKS
-	else if (!u.getAllowConnection())	{ sendResponseServer("462", ":You need to register first!", u); } // WORKS
 	else if (cmd == "NICK") { nick(u, c); } // WORKS
 	else if (cmd == "USER") { user(u, c); } // WORKS
+	else if (!u.isRegistered())	{ sendResponseServer("462", ":You need to register first!", u); } // WORKS
 	else if (cmd == "OPER") { oper(u, c); } // WORKS
 	else if (cmd == "QUIT") { quit(u, c); } // WORKS
 
