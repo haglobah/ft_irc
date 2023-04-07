@@ -345,7 +345,7 @@ void	Server::sendApply(Channel &chan, User &user, Command& c, string &modestring
 			chan.updatePrivileges(&userToChange, VOICE_PRIO);
 		string msg = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) 
 			+ "MODE " + chan._name + " " + modestring + " " + userNick + "\r\n";
-		sendResponseRaw(msg, userToChange);
+		sendResponseRaw(msg, user);
 		sendToChannel(msg, chan, user);
 	}
 }
