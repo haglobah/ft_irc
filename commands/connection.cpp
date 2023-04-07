@@ -82,7 +82,7 @@ void	Server::quit(User &user, Command& c)
 	if (c.getArgs().size() == 0)
 	{
 		user.setDisconnected();
-		sendResponseRaw(":" + user.getNick() + "@" + user.getName() + "!" + hostname.substr(1) + " QUIT\r\n", user);
+		sendResponseRaw(":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " QUIT\r\n", user);
 
 	}
 	else

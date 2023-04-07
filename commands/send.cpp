@@ -14,11 +14,7 @@ void	Server::sendResponseServer(string numeric_reply, string message, User& user
 	string response;
 
 	response = hostname + " " + numeric_reply + " " + user.getNick() + " " + message + "\r\n";
-	std::cout << "Response to send is \n|" << response << "| to: " << user.getNick() << endl << endl;
-	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
-		std::cout << "Couldn't send the response to FD :" << user.getFD() << std::endl;
-	if (user.isDisconnected())
-		disconnectUser(user);
+	sendResponseRaw(response, user);
 }
 
 void	Server::sendResponse(string message, User& user)
@@ -26,11 +22,7 @@ void	Server::sendResponse(string message, User& user)
 	string response;
 
 	response = ":" + user.getNick() + "!" + user.getName() + "@" + hostname.substr(1) + " " + message + "\r\n";
-	std::cout << "Response to send is \n|" << response << "| to: " << user.getNick() << std::endl << endl;
-	if (send(user.getFD(), response.c_str(), response.length(), 0) == -1)
-		std::cout << "Couldn't send the response to FD:" << user.getFD() << std::endl;
-	if (user.isDisconnected())
-		disconnectUser(user);
+	sendResponseRaw(response, user);
 }
 
 void	Server::sendResponseRaw(string message, User& user)
