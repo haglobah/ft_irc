@@ -122,6 +122,15 @@ void	Server::processCommands(string &acc, char *buf, int fd)
 	}
 }
 
+void	Server::cleanupUser(int fd)
+{
+	map<int, User>::iterator it = getUserFD(fd);
+	if (it != _users.end())
+		disconnectUser(it->second);
+	else
+		removeConnection(fd);
+}
+
 void	Server::receiveInput(int fd)
 {
 	char	buf[8912];
@@ -130,6 +139,7 @@ void	Server::receiveInput(int fd)
  
 	if (_is_first)
 	{
+		cout << "test\n";
 		memset(buf, 0, 8192);
 		_is_first = false;
 	}
@@ -138,9 +148,15 @@ void	Server::receiveInput(int fd)
 	memset(buf, 0, 8192);
 	received = recv(fd, buf, 8192, 0);
 	if (received == -1)
+	{
+		// cout << "received == -1" <<endl;
 		throw readingMsgFailed();
+	}
 	else if (received == 0)
-		removeConnection(fd);
+	{
+		// cout << "received == 0" <<endl;
+		cleanupUser(fd);
+	}
 	else
 	{
 		acc.append(buf);
@@ -157,7 +173,7 @@ void	Server::disconnectUser(User &u)
 		{
 			it->removeUser(&u);
 			sendToChannel(":" + u.getNick() + "!" + u.getName() + "@" + hostname.substr(1) + " QUIT " + it->_name + "\r\n", *it, u);
-			sendToChannel(getRPL_list(u), *it, u);
+			sendToChannel(getRPL_list(u, true), *it, u);
 			// sendResponseRaw(getRPL_list(u), u);
 		}
 		// if (it->_userCount == 0)

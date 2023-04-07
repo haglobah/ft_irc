@@ -88,8 +88,10 @@ class Server
 		bool	notInChannelNames(string);
 		bool	inChannelNames(string);
 
+		void	cleanupUser(int);
 		vector<Channel>::iterator	getChannel(string);
 		User&	getUser(string);
+		map<int, User>::iterator getUserFD(int);
 		bool	isUserIn(User&, string);
 		bool	isUserRegistered(string);
 		string	getChannelNames(User&, bool letUserSeeThemselves = false);

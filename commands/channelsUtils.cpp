@@ -89,6 +89,16 @@ User& Server::getUser(string name)
 	return (_users.end()->second);	
 }
 
+map<int, User>::iterator Server::getUserFD(int fd)
+{
+	for (map<int, User>::iterator it = _users.begin(); it != _users.end(); it++)
+	{
+		if (it->second.getFD() == fd)
+			return (it);
+	}
+	return (_users.end());	
+}
+
 
 string	Server::getChannelNames(User &user, bool letUserSeeThemselves)
 {
