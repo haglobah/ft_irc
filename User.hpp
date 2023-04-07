@@ -5,7 +5,6 @@
 class User 
 {
 	private:
-		std::string 	_buf;
 		std::string 	_nick;
 		std::string 	_name;
 		std::string 	_fullName;
@@ -19,8 +18,6 @@ class User
 	public:
 		User(int fd, std::string hostmask);		
 
-		void		setBuffer(std::string);
-
 		int			getFD() const;
 		std::string	getName() const;
 		void		setName(std::string);
@@ -30,7 +27,11 @@ class User
 
 		std::string	getNick() const;
 		void		setNick(std::string);
-		std::string	getBuffer() const;
+
+		std::string		_cmdAcc;
+		std::string	getAcc();
+		void		setAcc(std::string);
+		void		appendAcc(std::string);
 
 		std::string	getHostmask() const;
 

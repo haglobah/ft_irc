@@ -29,73 +29,73 @@ class Server
 		~Server();
 
 		// CONNECTION
-		void	setupPoll(int);
-		int		addConnection(int);
-		int		removeConnection(int);
-		void	executeCommand(User &, Command&);
-		void	processCommands(string &, char *, int);
-		void	receiveInput(int);
-		void	acceptUser();
-		void	disconnectUser(User &u);
+		void						setupPoll(int);
+		int							addConnection(int);
+		int							removeConnection(int);
+		void						executeCommand(User &, Command&);
+		void						processCommands(User &);
+		void						receiveInput(int);
+		void						acceptUser();
+		void						disconnectUser(User &u);
 
-		void	run(void);
+		void						run(void);
 
 		// SEND
-		void	sendResponseServer(string, string, User&);
-		void 	sendResponse(string, User&);
-		void 	sendResponseRaw(string, User&);
-		void	sendToChannel(string, Channel, User);
+		void						sendResponseServer(string, string, User&);
+		void 						sendResponse(string, User&);
+		void 						sendResponseRaw(string, User&);
+		void						sendToChannel(string, Channel, User);
 
 		// COMMANDS
-		void	pass(User&, Command&);
-		void	nick(User&, Command&);
-		void	user(User&, Command&);
-		void	ping(User&, Command&);
-		void	cap(User&, Command&);
-		void	oper(User&, Command&);
-		void	quit(User&, Command&);
+		void						pass(User&, Command&);
+		void						nick(User&, Command&);
+		void						user(User&, Command&);
+		void						ping(User&, Command&);
+		void						cap(User&, Command&);
+		void						oper(User&, Command&);
+		void						quit(User&, Command&);
 		
-		void	join(User&, Command&);
-		void	part(User&, Command&);
-		void	topic(User&, Command&);
-		void	list(User&, Command&);
-		void	kick(User&, Command&);
+		void						join(User&, Command&);
+		void						part(User&, Command&);
+		void						topic(User&, Command&);
+		void						list(User&, Command&);
+		void						kick(User&, Command&);
 
-		void	registrate(User&);
-		void	removeChannel(vector<Channel>::iterator);
-		void	applyUserModes(User&, Command&);
-		void	changeUserMode(Channel &, User&, Command&);
-		string	getUserModes(void);
-		// string	getChannelModes(string);
-		void	userMode(string, User&, Command&);
-		void	channelMode(string, User&, Command&);
-		void	mode(User&, Command&);
-		string	getRPL_list(User&, bool letUserSeeThemselves = false);
-		string	getRPL_namelist(std::vector<Channel>::iterator, User&);
+		void						registrate(User&);
+		void						removeChannel(vector<Channel>::iterator);
+		void						applyUserModes(User&, Command&);
+		void						changeUserMode(Channel &, User&, Command&);
+		string						getUserModes(void);
+		// string					getChannelModes(string);
+		void						userMode(string, User&, Command&);
+		void						channelMode(string, User&, Command&);
+		void						mode(User&, Command&);
+		string						getRPL_list(User&, bool letUserSeeThemselves = false);
+		string						getRPL_namelist(std::vector<Channel>::iterator, User&);
 
-		void	privmsg(User&, Command&);
-		void	notice(User&, Command&);
-		void	who(User&, Command&);
+		void						privmsg(User&, Command&);
+		void						notice(User&, Command&);
+		void						who(User&, Command&);
 
-		bool	alreadyInUse(string, string);
-		map<string, string>	parseChannels(User&, string);
-		map<string, string>	parseChannels(User&, string, string);
-		vector<string> parseUsers(string);
+		bool						alreadyInUse(string, string);
+		map<string, string>			parseChannels(User&, string);
+		map<string, string>			parseChannels(User&, string, string);
+		vector<string> 				parseUsers(string);
 
-		string	getUsersIn(vector<Channel>::iterator);
-		void	addUser(vector<Channel>::iterator, User&);
-		void	joinChannel(map<string, string>::iterator, User&);
-		bool	notInChannelNames(string);
-		bool	inChannelNames(string);
+		string						getUsersIn(vector<Channel>::iterator);
+		void						addUser(vector<Channel>::iterator, User&);
+		void						joinChannel(map<string, string>::iterator, User&);
+		bool						notInChannelNames(string);
+		bool						inChannelNames(string);
 
-		void	cleanupUser(int);
+		void						cleanupUser(int);
 		vector<Channel>::iterator	getChannel(string);
-		User&	getUser(string);
-		map<int, User>::iterator getUserFD(int);
-		bool	isUserIn(User&, string);
-		bool	isUserRegistered(string);
-		string	getChannelNames(User&, bool letUserSeeThemselves = false);
-		vector<string>	parseChannelPRIVMSG(User&, string);
+		User&						getUser(string);
+		map<int, User>::iterator 	getUserFD(int);
+		bool						isUserIn(User&, string);
+		bool						isUserRegistered(string);
+		string						getChannelNames(User&, bool letUserSeeThemselves = false);
+		vector<string>				parseChannelPRIVMSG(User&, string);
 		
 	private:
 		int 			_port;

@@ -47,32 +47,6 @@ void Server::run(void)
 	close(_listeningSocket);
 }
 
-
-string	getCommand(string& acc, char *buf)
-{
-	string cmd;
-	size_t newline;
-
-	while (acc.find("\r\n") != std::string::npos)
-		acc.replace(acc.find("\r\n"), 2, "\n");
-	newline = acc.find("\n");
-	if (newline == std::string::npos)
-	{
-		int i = -1;
-		while (acc[++i] != EOF)
-		{
-			if (acc[i] == '\0')
-				break ;
-		}
-		acc.erase(i, i + 1);
-		return ("");
-	}
-	cmd = acc.substr(0, newline);
-	acc.erase(0, newline + 1);
-	memset(buf, 0, 8912);
-	return (cmd);
-}
-
 void	Server::executeCommand(User &u, Command& c)
 {
 	std::string cmd = c.getName();
@@ -105,63 +79,6 @@ void	Server::executeCommand(User &u, Command& c)
 	else if (cmd == "WHO") { who(u, c); } // WORKS WITH ZERO PARAMS
 	else { sendResponseServer("421", cmd + " :" + cmd, u); } // WORKS
 	// else { exit(1); }
-}
-
-void	Server::processCommands(string &acc, char *buf, int fd)
-{
-	User	&user = _users.find(fd)->second;
-	string	cmd;
-
-	while(1)
-	{
-		cmd = getCommand(acc, buf);
-		if (cmd.empty())
-			break;
-		Command c(cmd);
-		executeCommand(user, c);
-	}
-}
-
-void	Server::cleanupUser(int fd)
-{
-	map<int, User>::iterator it = getUserFD(fd);
-	if (it != _users.end())
-		disconnectUser(it->second);
-	else
-		removeConnection(fd);
-}
-
-void	Server::receiveInput(int fd)
-{
-	char	buf[8912];
-	std::string acc;
-	int		received;
- 
-	if (_is_first)
-	{
-		cout << "test\n";
-		memset(buf, 0, 8192);
-		_is_first = false;
-	}
-	if (buf[0] != '\0')
-		acc.append(buf);
-	memset(buf, 0, 8192);
-	received = recv(fd, buf, 8192, 0);
-	if (received == -1)
-	{
-		// cout << "received == -1" <<endl;
-		throw readingMsgFailed();
-	}
-	else if (received == 0)
-	{
-		// cout << "received == 0" <<endl;
-		cleanupUser(fd);
-	}
-	else
-	{
-		acc.append(buf);
-		processCommands(acc, buf, fd);
-	}
 }
 
 void	Server::disconnectUser(User &u)
